@@ -1,0 +1,41 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Tính Tổng Hai Số</title>
+    <script>
+        function tinhTong() {
+            // Lấy giá trị từ các ô nhập liệu
+            var so1 = parseFloat(document.getElementById("so1").value);
+            var so2 = parseFloat(document.getElementById("so2").value);
+            
+            // Kiểm tra nếu số nhập vào không phải là số hoặc nhỏ hơn 0
+            if (isNaN(so1) || isNaN(so2) || so1 < 0 || so2 < 0) {
+                alert("Vui lòng nhập vào hai số dương hợp lệ!");
+                return;
+            }
+
+            // Tính tổng và hiển thị kết quả
+            var tong = so1 + so2;
+            document.getElementById("ketqua").value = tong;
+        }
+    </script>
+</head>
+<body>
+
+    <h2>Tính Tổng Hai Số Dương</h2>
+
+    <label for="so1">Số thứ nhất:</label>
+    <input type="number" id="so1" name="so1" min="0" required><br><br>
+
+    <label for="so2">Số thứ hai:</label>
+    <input type="number" id="so2" name="so2" min="0" required><br><br>
+
+    <button onclick="tinhTong()">Tính tổng</button><br><br>
+
+    <label for="ketqua">Kết quả:</label>
+    <input type="text" id="ketqua" name="ketqua" readonly><br>
+
+</body>
+</html>
