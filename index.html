@@ -12,29 +12,29 @@
             
             // Kiểm tra nếu số nhập vào không phải là số hoặc nhỏ hơn 0
             if (isNaN(so1) || isNaN(so2) || so1 < 0 || so2 < 0) {
-                alert("Vui lòng nhập vào hai số dương hợp lệ!");
+                alert("Incorrect value!");
                 return;
             }
 
             // Tính tổng và hiển thị kết quả
-            var tong = so1 + so2;
+            var tong = 2*so2 / (300 / sqrt(so1));
             document.getElementById("ketqua").value = tong;
         }
     </script>
 </head>
 <body>
 
-    <h2>Tính Tổng Hai Số Dương</h2>
+    <h2>Length To Time TDR</h2>
 
-    <label for="so1">Số thứ nhất:</label>
+    <label for="so1">Dielectric Dk:</label>
     <input type="number" id="so1" name="so1" min="0" required><br><br>
 
-    <label for="so2">Số thứ hai:</label>
+    <label for="so2">Transmission length (um):</label>
     <input type="number" id="so2" name="so2" min="0" required><br><br>
 
-    <button onclick="tinhTong()">Tính tổng</button><br><br>
+    <button onclick="tinhTong()">TDR time (um)</button><br><br>
 
-    <label for="ketqua">Kết quả:</label>
+    <label for="ketqua">Results:</label>
     <input type="text" id="ketqua" name="ketqua" readonly><br>
 
 </body>
