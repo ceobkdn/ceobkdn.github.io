@@ -41,11 +41,11 @@
 <body>
     <div class="container">
         <h2>Wave Length Calculator</h2>
-        <label for="frequency">Frequency (Hz):</label>
+        <label for="frequency">Frequency (GHz):</label>
         <input type="number" id="frequency" placeholder="Enter frequency in Hz">
 
-        <label for="permeability">Permeability (H/m):</label>
-        <input type="number" id="permeability" placeholder="Enter permeability in H/m">
+        <label for="permeability">Dielectric Dk:</label>
+        <input type="number" id="permeability" placeholder="Enter Dielectric Dk">
 
         <button onclick="calculateWavelength()">Calculate Wavelength</button>
 
@@ -63,15 +63,15 @@
             }
 
             if (isNaN(permeability) || permeability <= 0) {
-                alert('Please enter a valid permeability greater than 0.');
+                alert('Please enter a valid Dielectric Dk greater than 0.');
                 return;
             }
 
             const speedOfLight = 299792458; // Speed of light in vacuum (m/s)
-            const wavelength = speedOfLight / (frequency * Math.sqrt(permeability));
+            const wavelength = speedOfLight / (frequency *1e3 * Math.sqrt(permeability));
 
             document.getElementById('result').style.display = 'block';
-            document.getElementById('result').innerText = `Calculated Wavelength: ${wavelength.toFixed(2)} meters`;
+            document.getElementById('result').innerText = `Calculated Wavelength: ${wavelength.toFixed(2)} um`;
         }
     </script>
 </body>
