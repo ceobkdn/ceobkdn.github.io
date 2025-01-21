@@ -40,14 +40,14 @@
 </head>
 <body>
     <div class="container">
-        <h2>Wave Length Calculator</h2>
-        <label for="frequency">Frequency (GHz):</label>
+        <h2>Maximum Diff. Mismatch Calculator</h2>
+        <label for="frequency">Maximum Frequency / Baseband BW (GHz):</label>
         <input type="number" id="frequency" placeholder="Enter frequency in GHz">
 
         <label for="permeability">Dielectric Dk:</label>
         <input type="number" id="permeability" placeholder="Enter Dielectric Dk">
 
-        <label for="percentage">Percentage of Wavelength (%):</label>
+        <label for="percentage">Maximum Diff. Mismatch (%):</label>
         <input type="number" id="percentage" value="10" placeholder="Enter percentage">
 
         <button onclick="calculateWavelength()">Calculate Wavelength</button>
@@ -81,7 +81,7 @@
             const adjustedWavelength = wavelength * (percentage / 100);
 
             document.getElementById('result').style.display = 'block';
-            document.getElementById('result').innerText = `Calculated Wavelength: ${wavelength.toFixed(2)} um\nAdjusted Wavelength (${percentage}%): ${adjustedWavelength.toFixed(2)} um`;
+            document.getElementById('result').innerText = `Calculated Wavelength: ${wavelength.toFixed(2)} um\nMax diff. mismatch length (${percentage}%): ${adjustedWavelength.toFixed(2)} um`;
         }
     </script>
 </body>
