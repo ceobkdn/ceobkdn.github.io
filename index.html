@@ -1,47 +1,26 @@
 <!DOCTYPE html>
-<html lang="vi">
+<html>
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>TDR Time</title>
-    <script>
-        function tinhTong() {
-            // Lấy giá trị từ các ô nhập liệu
-            var so1 = parseFloat(document.getElementById("so1").value);
-            var so2 = parseFloat(document.getElementById("so2").value);
-            
-            // Kiểm tra nếu số nhập vào không phải là số hoặc nhỏ hơn 0
-            if (isNaN(so1) || isNaN(so2) || so1 < 0 || so2 < 0) {
-                alert("Incorrect value!");
-                return;
-            }
-
-            // Tính tổng và hiển thị kết quả
-            var tong = 2*so2 / (300 / Math.sqrt(so1));
-            document.getElementById("ketqua").value = tong;
-            //alert(tong);
-        }
-    function goToNewPage() {
-            window.location.href = 'https://ceobkdn.github.io/index_wavelength.html'; // Replace with your desired URL
-        }
-    </script>
+    <title>Các liên kết</title>
 </head>
 <body>
+    <div id="buttons"></div>
+    <script>
+        const links = [
+            { name: 'TDR', url: 'https://ceobkdn.github.io/tdr.html' },
+            { name: 'Diff Mismatch', url: 'https://ceobkdn.github.io/diffmismatch.html' },
+            { name: 'YouTube', url: 'https://www.youtube.com' },
+            { name: 'Wikipedia', url: 'https://vi.wikipedia.org' }
+        ];
 
-    <h2>Length To Time TDR</h2>
+        const buttonsContainer = document.getElementById('buttons');
 
-    <label for="so1">Dielectric Dk:</label>
-    <input type="number" id="so1" name="so1" min="0" required><br><br>
-
-    <label for="so2">Transmission length (um):</label>
-    <input type="number" id="so2" name="so2" min="0" required><br><br>
-
-    <button onclick="tinhTong()">TDR time (ps)</button><br><br>
-
-    <label for="ketqua">Results:</label>
-    <input type="text" id="ketqua" name="ketqua" readonly><br>
-
-    <button onclick="goToNewPage()">Go to New Page</button>
-
+        links.forEach(link => {
+            const button = document.createElement('button');
+            button.textContent = link.name;
+            button.onclick = () => window.open(link.url);
+            buttonsContainer.appendChild(button);
+        });
+    </script>
 </body>
 </html>
