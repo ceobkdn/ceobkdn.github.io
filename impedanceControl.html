@@ -7,7 +7,7 @@
     <style>
         body {
             font-family: Arial, sans-serif;
-            max-width: 800px;
+            max-width: 600px;
             margin: 0 auto;
             padding: 20px;
             background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
@@ -26,119 +26,93 @@
             text-align: center;
             color: #333;
             margin-bottom: 30px;
-            font-size: 2.2em;
-            text-shadow: 0 2px 4px rgba(0,0,0,0.1);
+            font-size: 2em;
         }
         
         .equation-box {
             background: linear-gradient(135deg, #e3f2fd 0%, #bbdefb 100%);
-            padding: 20px;
+            padding: 15px;
             border-radius: 10px;
             margin-bottom: 25px;
+            text-align: center;
             border-left: 5px solid #2196f3;
         }
         
         .equation {
-            font-size: 1.2em;
+            font-size: 1.1em;
             font-weight: bold;
-            text-align: center;
-            margin: 10px 0;
+            margin: 5px 0;
             color: #1976d2;
         }
         
         .input-section {
             background: #f8f9fa;
-            padding: 20px;
+            padding: 25px;
             border-radius: 10px;
-            margin-bottom: 20px;
             border: 1px solid #e9ecef;
         }
         
-        .input-group {
+        .input-row {
             display: flex;
             align-items: center;
             margin-bottom: 15px;
-            flex-wrap: wrap;
-            gap: 10px;
+            gap: 15px;
         }
         
-        label {
+        .input-row label {
             font-weight: bold;
             color: #495057;
-            min-width: 200px;
+            width: 120px;
             flex-shrink: 0;
         }
         
+        .value-inputs {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            flex: 1;
+        }
+        
         input[type="number"] {
-            padding: 10px 15px;
+            padding: 8px 12px;
             border: 2px solid #ced4da;
-            border-radius: 8px;
-            font-size: 16px;
-            transition: all 0.3s ease;
-            min-width: 120px;
+            border-radius: 6px;
+            font-size: 14px;
+            width: 80px;
+            text-align: center;
+            transition: border-color 0.3s ease;
         }
         
         input[type="number"]:focus {
             outline: none;
             border-color: #4c84ff;
-            box-shadow: 0 0 0 3px rgba(76, 132, 255, 0.1);
-            transform: translateY(-1px);
         }
         
-        button {
-            background: linear-gradient(135deg, #4c84ff 0%, #6c5ce7 100%);
-            color: white;
-            border: none;
-            padding: 12px 25px;
-            border-radius: 8px;
-            cursor: pointer;
-            font-size: 16px;
+        .arrow {
+            font-size: 18px;
+            color: #666;
             font-weight: bold;
-            transition: all 0.3s ease;
-            box-shadow: 0 4px 15px rgba(76, 132, 255, 0.3);
         }
         
-        button:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 6px 20px rgba(76, 132, 255, 0.4);
-        }
-        
-        .result-section {
+        .result-display {
             background: linear-gradient(135deg, #e8f5e8 0%, #c8e6c9 100%);
             padding: 20px;
-            border-radius: 10px;
-            margin-top: 20px;
-            border-left: 5px solid #4caf50;
-        }
-        
-        .result-item {
-            margin: 15px 0;
-            padding: 15px;
-            background: rgba(255, 255, 255, 0.7);
             border-radius: 8px;
-            border: 1px solid rgba(76, 175, 80, 0.2);
+            margin-top: 20px;
+            text-align: center;
+            border-left: 5px solid #4caf50;
         }
         
         .result-label {
             font-weight: bold;
             color: #2e7d32;
             font-size: 1.1em;
+            margin-bottom: 10px;
         }
         
         .result-value {
-            font-size: 1.3em;
+            font-size: 1.8em;
             color: #1b5e20;
-            font-weight: bold;
-            margin-top: 5px;
-        }
-        
-        .warning {
-            background: linear-gradient(135deg, #fff3e0 0%, #ffe0b2 100%);
-            padding: 15px;
-            border-radius: 8px;
-            margin: 10px 0;
-            border-left: 4px solid #ff9800;
-            color: #e65100;
             font-weight: bold;
         }
         
@@ -149,145 +123,91 @@
             margin-top: 20px;
             border-left: 4px solid #9c27b0;
             color: #4a148c;
+            font-size: 0.9em;
         }
     </style>
 </head>
 <body>
     <div class="container">
-        <h1>🔌 Máy Tính Trở Kháng Đường Dây</h1>
+        <h1>🔌 Máy Tính Trở Kháng</h1>
         
         <div class="equation-box">
             <div class="equation">Z = √(L/C)</div>
             <div class="equation">C = ε × A/d</div>
-            <div style="text-align: center; margin-top: 15px; color: #666; font-size: 0.9em;">
-                Trong đó: Z - Trở kháng, L - Điện cảm, C - Điện dung, ε - Hằng số điện môi, A - Diện tích, d - Khoảng cách
-            </div>
         </div>
         
         <div class="input-section">
-            <h3 style="color: #495057; margin-top: 0;">📊 Thông Số Đầu Vào</h3>
+            <h3 style="color: #495057; margin-top: 0; text-align: center;">📊 Thông Số Đầu Vào</h3>
             
-            <div class="input-group">
-                <label>Giá trị Z ban đầu (Ω):</label>
-                <input type="number" id="z0" value="100" step="0.01">
+            <div class="input-row">
+                <label>Z ban đầu (Ω):</label>
+                <input type="number" id="z0" value="100" step="0.01" style="width: 100px;">
             </div>
             
-            <div class="input-group">
-                <label>Tỉ lệ thay đổi A (lần):</label>
-                <input type="number" id="ratioA" value="1" step="0.01" min="0.01">
-                <span style="color: #666; font-size: 0.9em;">(A_mới = A_cũ × tỉ lệ này)</span>
+            <div class="input-row">
+                <label>Diện tích A:</label>
+                <div class="value-inputs">
+                    <input type="number" id="A_old" value="1" step="0.01" placeholder="Trước">
+                    <span class="arrow">→</span>
+                    <input type="number" id="A_new" value="1" step="0.01" placeholder="Sau">
+                </div>
             </div>
             
-            <div class="input-group">
-                <label>Tỉ lệ thay đổi d (lần):</label>
-                <input type="number" id="ratioD" value="1" step="0.01" min="0.01">
-                <span style="color: #666; font-size: 0.9em;">(d_mới = d_cũ × tỉ lệ này)</span>
+            <div class="input-row">
+                <label>Khoảng cách d:</label>
+                <div class="value-inputs">
+                    <input type="number" id="d_old" value="1" step="0.01" placeholder="Trước">
+                    <span class="arrow">→</span>
+                    <input type="number" id="d_new" value="1" step="0.01" placeholder="Sau">
+                </div>
             </div>
             
-            <button onclick="calculate()" style="margin-top: 15px; width: 100%;">🧮 Tính Toán</button>
-        </div>
-        
-        <div class="result-section" id="results" style="display: none;">
-            <h3 style="color: #2e7d32; margin-top: 0;">📈 Kết Quả Tính Toán</h3>
-            
-            <div class="result-item">
-                <div class="result-label">Tỉ lệ thay đổi điện dung (C_mới/C_cũ):</div>
-                <div class="result-value" id="capacitanceRatio">-</div>
-            </div>
-            
-            <div class="result-item">
-                <div class="result-label">Tỉ lệ thay đổi trở kháng (Z_mới/Z_cũ):</div>
-                <div class="result-value" id="impedanceRatio">-</div>
-            </div>
-            
-            <div class="result-item">
-                <div class="result-label">Giá trị trở kháng mới (Z_mới):</div>
-                <div class="result-value" id="newImpedance">-</div>
-            </div>
-            
-            <div class="result-item">
-                <div class="result-label">Độ thay đổi trở kháng (ΔZ):</div>
-                <div class="result-value" id="impedanceChange">-</div>
-            </div>
-            
-            <div class="result-item">
-                <div class="result-label">Phần trăm thay đổi:</div>
-                <div class="result-value" id="percentChange">-</div>
+            <div class="result-display">
+                <div class="result-label">Trở Kháng Mới (Z)</div>
+                <div class="result-value" id="newImpedance">100.00 Ω</div>
             </div>
         </div>
         
         <div class="note">
-            <strong>📝 Ghi chú:</strong><br>
-            • Khi A tăng → C tăng → Z giảm<br>
-            • Khi d tăng → C giảm → Z tăng<br>
-            • Trở kháng tỉ lệ nghịch với căn bậc hai của điện dung<br>
-            • L được giả định không đổi trong tính toán này
+            <strong>📝 Lưu ý:</strong> Nhập giá trị trước và sau của A, d. Kết quả sẽ tự động cập nhật.
         </div>
     </div>
 
     <script>
         function calculate() {
-            // Lấy giá trị đầu vào
-            const z0 = parseFloat(document.getElementById('z0').value);
-            const ratioA = parseFloat(document.getElementById('ratioA').value);
-            const ratioD = parseFloat(document.getElementById('ratioD').value);
+            const z0 = parseFloat(document.getElementById('z0').value) || 100;
+            const A_old = parseFloat(document.getElementById('A_old').value) || 1;
+            const A_new = parseFloat(document.getElementById('A_new').value) || 1;
+            const d_old = parseFloat(document.getElementById('d_old').value) || 1;
+            const d_new = parseFloat(document.getElementById('d_new').value) || 1;
             
-            // Kiểm tra tính hợp lệ của dữ liệu
-            if (isNaN(z0) || isNaN(ratioA) || isNaN(ratioD) || 
-                z0 <= 0 || ratioA <= 0 || ratioD <= 0) {
-                alert('⚠️ Vui lòng nhập các giá trị hợp lệ (lớn hơn 0)!');
+            if (A_old <= 0 || A_new <= 0 || d_old <= 0 || d_new <= 0 || z0 <= 0) {
+                document.getElementById('newImpedance').textContent = 'Lỗi: Giá trị phải > 0';
                 return;
             }
             
-            // Tính toán tỉ lệ thay đổi điện dung
-            // C_mới/C_cũ = (A_mới/A_cũ) / (d_mới/d_cũ) = ratioA / ratioD
+            // Tính tỉ lệ thay đổi điện dung: C_new/C_old = (A_new/A_old) / (d_new/d_old)
+            const ratioA = A_new / A_old;
+            const ratioD = d_new / d_old;
             const capacitanceRatio = ratioA / ratioD;
             
-            // Tính toán tỉ lệ thay đổi trở kháng
-            // Z = √(L/C), nên Z_mới/Z_cũ = √(C_cũ/C_mới) = 1/√(C_mới/C_cũ)
+            // Tính tỉ lệ thay đổi trở kháng: Z_new/Z_old = 1/√(C_new/C_old)
             const impedanceRatio = 1 / Math.sqrt(capacitanceRatio);
             
             // Tính giá trị trở kháng mới
             const newImpedance = z0 * impedanceRatio;
             
-            // Tính độ thay đổi
-            const impedanceChange = newImpedance - z0;
-            const percentChange = (impedanceChange / z0) * 100;
-            
-            // Hiển thị kết quả
-            document.getElementById('capacitanceRatio').textContent = 
-                `${capacitanceRatio.toFixed(4)} ${capacitanceRatio > 1 ? '(tăng)' : capacitanceRatio < 1 ? '(giảm)' : '(không đổi)'}`;
-            
-            document.getElementById('impedanceRatio').textContent = 
-                `${impedanceRatio.toFixed(4)} ${impedanceRatio > 1 ? '(tăng)' : impedanceRatio < 1 ? '(giảm)' : '(không đổi)'}`;
-            
-            document.getElementById('newImpedance').textContent = 
-                `${newImpedance.toFixed(4)} Ω`;
-            
-            document.getElementById('impedanceChange').textContent = 
-                `${impedanceChange >= 0 ? '+' : ''}${impedanceChange.toFixed(4)} Ω`;
-            
-            document.getElementById('percentChange').textContent = 
-                `${percentChange >= 0 ? '+' : ''}${percentChange.toFixed(2)}%`;
-            
-            // Hiển thị phần kết quả
-            document.getElementById('results').style.display = 'block';
-            
-            // Cuộn xuống kết quả
-            document.getElementById('results').scrollIntoView({ behavior: 'smooth' });
+            document.getElementById('newImpedance').textContent = `${newImpedance.toFixed(4)} Ω`;
         }
         
-        // Tự động tính toán khi nhấn Enter
-        document.addEventListener('keypress', function(event) {
-            if (event.key === 'Enter') {
-                calculate();
-            }
+        // Tự động tính toán khi có thay đổi
+        const inputs = ['z0', 'A_old', 'A_new', 'd_old', 'd_new'];
+        inputs.forEach(id => {
+            document.getElementById(id).addEventListener('input', calculate);
         });
         
-        // Tính toán ngay khi tải trang với giá trị mặc định
-        window.onload = function() {
-            calculate();
-        };
+        // Tính toán ban đầu
+        calculate();
     </script>
 </body>
 </html>
