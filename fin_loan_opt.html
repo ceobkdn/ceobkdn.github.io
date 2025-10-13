@@ -1,185 +1,530 @@
 <!DOCTYPE html>
 <html lang="vi">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Loan Analyzer</title>
-  <!-- Tailwind CSS -->
-  <script src="https://cdn.tailwindcss.com"></script>
-  <!-- React + ReactDOM -->
-  <script src="https://unpkg.com/react@18/umd/react.development.js" crossorigin></script>
-  <script src="https://unpkg.com/react-dom@18/umd/react-dom.development.js" crossorigin></script>
-  <!-- Babel -->
-  <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
-  <!-- Recharts -->
-  <script src="https://unpkg.com/recharts/umd/Recharts.min.js"></script>
-  <!-- Lucide Icons (UMD) -->
-  <script src="https://unpkg.com/lucide/dist/lucide.js"></script>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Phân Tích Khoản Vay & Tối Ưu Hóa</title>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            padding: 20px;
+            min-height: 100vh;
+        }
+
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+            background: white;
+            border-radius: 20px;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+            overflow: hidden;
+        }
+
+        .header {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 30px;
+            text-align: center;
+        }
+
+        .header h1 {
+            font-size: 2.5em;
+            margin-bottom: 10px;
+        }
+
+        .controls {
+            padding: 30px;
+            background: #f8f9fa;
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 20px;
+        }
+
+        .input-group {
+            display: flex;
+            flex-direction: column;
+        }
+
+        .input-group label {
+            font-weight: 600;
+            margin-bottom: 8px;
+            color: #333;
+            font-size: 0.95em;
+        }
+
+        .input-group input {
+            padding: 12px;
+            border: 2px solid #e0e0e0;
+            border-radius: 8px;
+            font-size: 1em;
+            transition: all 0.3s;
+        }
+
+        .input-group input:focus {
+            outline: none;
+            border-color: #667eea;
+            box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+        }
+
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 20px;
+            padding: 30px;
+        }
+
+        .stat-card {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 20px;
+            border-radius: 12px;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+        }
+
+        .stat-card h3 {
+            font-size: 0.9em;
+            opacity: 0.9;
+            margin-bottom: 10px;
+        }
+
+        .stat-card .value {
+            font-size: 1.8em;
+            font-weight: bold;
+        }
+
+        .charts-grid {
+            padding: 30px;
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(450px, 1fr));
+            gap: 30px;
+        }
+
+        .chart-container {
+            background: white;
+            padding: 20px;
+            border-radius: 12px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+
+        .chart-container h2 {
+            margin-bottom: 20px;
+            color: #333;
+            font-size: 1.3em;
+        }
+
+        .chart-wrapper {
+            position: relative;
+            height: 300px;
+        }
+
+        .detail-box {
+            margin: 30px;
+            padding: 25px;
+            background: #f8f9fa;
+            border-radius: 12px;
+            border-left: 5px solid #667eea;
+        }
+
+        .detail-box h2 {
+            color: #333;
+            margin-bottom: 20px;
+            font-size: 1.5em;
+        }
+
+        .detail-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 20px;
+        }
+
+        .detail-item {
+            padding: 15px;
+            background: white;
+            border-radius: 8px;
+            border-left: 4px solid #667eea;
+        }
+
+        .detail-item .label {
+            font-size: 0.85em;
+            color: #666;
+            margin-bottom: 5px;
+        }
+
+        .detail-item .value {
+            font-size: 1.3em;
+            font-weight: bold;
+            color: #333;
+        }
+
+        .conclusion {
+            margin-top: 20px;
+            padding: 20px;
+            background: white;
+            border-radius: 8px;
+            border: 2px solid #667eea;
+        }
+
+        .conclusion strong {
+            color: #667eea;
+        }
+
+        .positive {
+            border-left-color: #10b981 !important;
+        }
+
+        .negative {
+            border-left-color: #ef4444 !important;
+        }
+
+        @media (max-width: 768px) {
+            .charts-grid {
+                grid-template-columns: 1fr;
+            }
+            
+            .header h1 {
+                font-size: 1.8em;
+            }
+        }
+    </style>
 </head>
-<body class="bg-gray-100">
-  <div id="root"></div>
-
-  <script type="text/babel">
-    const {
-      useState,
-      useMemo
-    } = React;
-    const {
-      LineChart, Line, BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer, Area, AreaChart
-    } = Recharts;
-
-    const LoanAnalyzer = () => {
-      const [principal, setPrincipal] = useState(500);
-      const [annualRate, setAnnualRate] = useState(9.6);
-      const [months, setMonths] = useState(12);
-      const [prepaymentMonth, setPrepaymentMonth] = useState(4);
-      const [penaltyRate, setPenaltyRate] = useState(2);
-      const [savingsRate, setSavingsRate] = useState(4.5);
-
-      const calculations = useMemo(() => {
-        const monthlyRate = annualRate / 100 / 12;
-        const monthlyPayment = (principal * monthlyRate * Math.pow(1 + monthlyRate, months)) /
-                              (Math.pow(1 + monthlyRate, months) - 1);
-
-        let balance = principal;
-        const schedule = [];
-        let totalInterest = 0;
-        let cumulativeInterest = 0;
-
-        for (let month = 1; month <= months; month++) {
-          const interestPayment = balance * monthlyRate;
-          const principalPayment = monthlyPayment - interestPayment;
-          cumulativeInterest += interestPayment;
-          totalInterest += interestPayment;
-
-          schedule.push({
-            month,
-            payment: monthlyPayment,
-            principal: principalPayment,
-            interest: interestPayment,
-            balance: balance - principalPayment,
-            cumulativeInterest,
-            interestPercent: (cumulativeInterest / totalInterest) * 100
-          });
-
-          balance -= principalPayment;
-        }
-
-        // Prepayment analysis
-        const prepaymentAnalysis = [];
-        for (let month = 1; month <= months; month++) {
-          const paidInterest = schedule.slice(0, month).reduce((sum, s) => sum + s.interest, 0);
-          const remainingBalance = schedule[month - 1]?.balance || 0;
-          const penaltyAmount = remainingBalance * (penaltyRate / 100);
-          const remainingInterest = schedule.slice(month).reduce((sum, s) => sum + s.interest, 0);
-
-          const savingsMonthlyRate = savingsRate / 100 / 12;
-          const remainingMonths = months - month;
-          const savingsInterest = remainingBalance * savingsMonthlyRate * remainingMonths;
-
-          const netBenefit = remainingInterest - penaltyAmount - savingsInterest;
-
-          prepaymentAnalysis.push({
-            month,
-            remainingBalance,
-            penaltyAmount,
-            remainingInterest,
-            savingsInterest,
-            netBenefit,
-            totalSaved: remainingInterest - penaltyAmount
-          });
-        }
-
-        const optimalMonth = prepaymentAnalysis.reduce((max, curr) =>
-          curr.netBenefit > max.netBenefit ? curr : max
-        );
-
-        return {
-          monthlyPayment,
-          schedule,
-          totalInterest,
-          prepaymentAnalysis,
-          optimalMonth
-        };
-      }, [principal, annualRate, months, prepaymentMonth, penaltyRate, savingsRate]);
-
-      const formatCurrency = (value) => {
-        return new Intl.NumberFormat('vi-VN').format(value.toFixed(0)) + ' tr';
-      };
-
-      const selectedPrepayment = calculations.prepaymentAnalysis[prepaymentMonth - 1];
-
-      return (
-        <div className="w-full max-w-7xl mx-auto p-6 bg-gradient-to-br from-blue-50 to-indigo-50">
-          <h1 className="text-3xl font-bold text-gray-800 mb-4">Phân Tích Khoản Vay & Tối Ưu Hóa</h1>
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-6">
-            <div>
-              <label>Số tiền vay (triệu VNĐ)</label>
-              <input type="number" value={principal} onChange={e => setPrincipal(Number(e.target.value))}
-                     className="w-full p-2 border rounded"/>
-            </div>
-            <div>
-              <label>Lãi suất (%/năm)</label>
-              <input type="number" value={annualRate} step="0.1" onChange={e => setAnnualRate(Number(e.target.value))}
-                     className="w-full p-2 border rounded"/>
-            </div>
-            <div>
-              <label>Thời hạn (tháng)</label>
-              <input type="number" value={months} onChange={e => setMonths(Number(e.target.value))}
-                     className="w-full p-2 border rounded"/>
-            </div>
-          </div>
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-6">
-            <div>
-              <label>Phí phạt trả trước (%)</label>
-              <input type="number" value={penaltyRate} step="0.1" onChange={e => setPenaltyRate(Number(e.target.value))}
-                     className="w-full p-2 border rounded"/>
-            </div>
-            <div>
-              <label>Lãi tiết kiệm (%/năm)</label>
-              <input type="number" value={savingsRate} step="0.1" onChange={e => setSavingsRate(Number(e.target.value))}
-                     className="w-full p-2 border rounded"/>
-            </div>
-            <div>
-              <label>Tháng trả trước hạn</label>
-              <input type="number" min="1" max={months} value={prepaymentMonth} onChange={e => setPrepaymentMonth(Number(e.target.value))}
-                     className="w-full p-2 border rounded"/>
-            </div>
-          </div>
-
-          <div className="grid grid-cols-2 gap-6">
-            <div className="bg-white p-4 rounded shadow">
-              <h2 className="font-bold mb-2">Lãi suất tích lũy</h2>
-              <ResponsiveContainer width="100%" height={200}>
-                <AreaChart data={calculations.schedule}>
-                  <CartesianGrid strokeDasharray="3 3" />
-                  <XAxis dataKey="month"/>
-                  <YAxis/>
-                  <Tooltip formatter={val => val.toFixed(1) + "%"} />
-                  <Area type="monotone" dataKey="interestPercent" stroke="#8b5cf6" fill="#a78bfa" />
-                </AreaChart>
-              </ResponsiveContainer>
-            </div>
-            <div className="bg-white p-4 rounded shadow">
-              <h2 className="font-bold mb-2">Gốc vs Lãi hàng tháng</h2>
-              <ResponsiveContainer width="100%" height={200}>
-                <BarChart data={calculations.schedule}>
-                  <CartesianGrid strokeDasharray="3 3"/>
-                  <XAxis dataKey="month"/>
-                  <YAxis/>
-                  <Tooltip formatter={val => formatCurrency(val)}/>
-                  <Legend />
-                  <Bar dataKey="principal" stackId="a" fill="#10b981" name="Gốc"/>
-                  <Bar dataKey="interest" stackId="a" fill="#ef4444" name="Lãi"/>
-                </BarChart>
-              </ResponsiveContainer>
-            </div>
-          </div>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>📊 Phân Tích Khoản Vay & Tối Ưu Hóa</h1>
+            <p>Công cụ phân tích và tìm thời điểm tối ưu để trả nợ trước hạn</p>
         </div>
-      );
-    };
 
-    ReactDOM.createRoot(document.getElementById('root')).render(<LoanAnalyzer />);
-  </script>
+        <div class="controls">
+            <div class="input-group">
+                <label for="principal">Số tiền vay (triệu VNĐ)</label>
+                <input type="number" id="principal" value="500" min="1" step="10">
+            </div>
+            <div class="input-group">
+                <label for="annualRate">Lãi suất (%/năm)</label>
+                <input type="number" id="annualRate" value="9.6" min="0" step="0.1">
+            </div>
+            <div class="input-group">
+                <label for="months">Thời hạn (tháng)</label>
+                <input type="number" id="months" value="12" min="1" step="1">
+            </div>
+            <div class="input-group">
+                <label for="penaltyRate">Phí phạt trả trước (%)</label>
+                <input type="number" id="penaltyRate" value="2" min="0" step="0.1">
+            </div>
+            <div class="input-group">
+                <label for="savingsRate">Lãi tiết kiệm (%/năm)</label>
+                <input type="number" id="savingsRate" value="4.5" min="0" step="0.1">
+            </div>
+            <div class="input-group">
+                <label for="prepaymentMonth">Tháng trả trước hạn</label>
+                <input type="range" id="prepaymentMonth" value="4" min="1" max="12" step="1">
+                <span id="prepaymentMonthValue" style="text-align: center; font-weight: bold; color: #667eea; margin-top: 5px;">Tháng 4</span>
+            </div>
+        </div>
+
+        <div class="stats-grid" id="statsGrid"></div>
+
+        <div class="charts-grid">
+            <div class="chart-container">
+                <h2>Phân Bố Lãi Suất Tích Lũy</h2>
+                <div class="chart-wrapper">
+                    <canvas id="interestChart"></canvas>
+                </div>
+            </div>
+            <div class="chart-container">
+                <h2>Gốc vs Lãi Hàng Tháng</h2>
+                <div class="chart-wrapper">
+                    <canvas id="principalInterestChart"></canvas>
+                </div>
+            </div>
+            <div class="chart-container" style="grid-column: 1 / -1;">
+                <h2>Phân Tích Lợi Ích Trả Trước Hạn</h2>
+                <div class="chart-wrapper" style="height: 350px;">
+                    <canvas id="prepaymentChart"></canvas>
+                </div>
+            </div>
+        </div>
+
+        <div class="detail-box" id="detailBox"></div>
+    </div>
+
+    <script>
+        let charts = {};
+
+        function formatCurrency(value) {
+            return new Intl.NumberFormat('vi-VN').format(Math.round(value)) + ' tr';
+        }
+
+        function calculateLoan() {
+            const principal = parseFloat(document.getElementById('principal').value);
+            const annualRate = parseFloat(document.getElementById('annualRate').value);
+            const months = parseInt(document.getElementById('months').value);
+            const penaltyRate = parseFloat(document.getElementById('penaltyRate').value);
+            const savingsRate = parseFloat(document.getElementById('savingsRate').value);
+            const prepaymentMonth = parseInt(document.getElementById('prepaymentMonth').value);
+
+            // Update slider max
+            document.getElementById('prepaymentMonth').max = months;
+
+            const monthlyRate = annualRate / 100 / 12;
+            const monthlyPayment = (principal * monthlyRate * Math.pow(1 + monthlyRate, months)) / 
+                                  (Math.pow(1 + monthlyRate, months) - 1);
+
+            let balance = principal;
+            const schedule = [];
+            let totalInterest = 0;
+            let cumulativeInterest = 0;
+
+            for (let month = 1; month <= months; month++) {
+                const interestPayment = balance * monthlyRate;
+                const principalPayment = monthlyPayment - interestPayment;
+                cumulativeInterest += interestPayment;
+                totalInterest += interestPayment;
+
+                schedule.push({
+                    month,
+                    payment: monthlyPayment,
+                    principal: principalPayment,
+                    interest: interestPayment,
+                    balance: balance - principalPayment,
+                    cumulativeInterest,
+                    interestPercent: (cumulativeInterest / totalInterest) * 100
+                });
+
+                balance -= principalPayment;
+            }
+
+            // Calculate prepayment analysis
+            const prepaymentAnalysis = [];
+            for (let month = 1; month <= months; month++) {
+                const remainingBalance = schedule[month - 1].balance;
+                const penaltyAmount = remainingBalance * (penaltyRate / 100);
+                const remainingInterest = schedule.slice(month).reduce((sum, s) => sum + s.interest, 0);
+                
+                const savingsMonthlyRate = savingsRate / 100 / 12;
+                const remainingMonths = months - month;
+                const savingsInterest = remainingBalance * savingsMonthlyRate * remainingMonths;
+                
+                const netBenefit = remainingInterest - penaltyAmount - savingsInterest;
+
+                prepaymentAnalysis.push({
+                    month,
+                    remainingBalance,
+                    penaltyAmount,
+                    remainingInterest,
+                    savingsInterest,
+                    netBenefit,
+                    totalSaved: remainingInterest - penaltyAmount
+                });
+            }
+
+            const optimalMonth = prepaymentAnalysis.reduce((max, curr) => 
+                curr.netBenefit > max.netBenefit ? curr : max
+            );
+
+            return {
+                monthlyPayment,
+                schedule,
+                totalInterest,
+                prepaymentAnalysis,
+                optimalMonth,
+                prepaymentMonth
+            };
+        }
+
+        function updateStats(data) {
+            const statsHtml = `
+                <div class="stat-card">
+                    <h3>💰 Trả hàng tháng</h3>
+                    <div class="value">${formatCurrency(data.monthlyPayment)}</div>
+                </div>
+                <div class="stat-card">
+                    <h3>📈 Tổng lãi phải trả</h3>
+                    <div class="value">${formatCurrency(data.totalInterest)}</div>
+                </div>
+                <div class="stat-card">
+                    <h3>🎯 Tháng tối ưu</h3>
+                    <div class="value">Tháng ${data.optimalMonth.month}</div>
+                </div>
+                <div class="stat-card">
+                    <h3>✨ Lợi ích tối đa</h3>
+                    <div class="value">${formatCurrency(data.optimalMonth.netBenefit)}</div>
+                </div>
+            `;
+            document.getElementById('statsGrid').innerHTML = statsHtml;
+        }
+
+        function updateCharts(data) {
+            // Chart 1: Interest Accumulation
+            if (charts.interest) charts.interest.destroy();
+            const ctx1 = document.getElementById('interestChart').getContext('2d');
+            charts.interest = new Chart(ctx1, {
+                type: 'line',
+                data: {
+                    labels: data.schedule.map(s => `T${s.month}`),
+                    datasets: [{
+                        label: '% Lãi tích lũy',
+                        data: data.schedule.map(s => s.interestPercent),
+                        borderColor: '#ef4444',
+                        backgroundColor: 'rgba(239, 68, 68, 0.1)',
+                        fill: true,
+                        tension: 0.4
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        legend: { display: false }
+                    },
+                    scales: {
+                        y: {
+                            beginAtZero: true,
+                            title: { display: true, text: '% Tổng lãi' }
+                        }
+                    }
+                }
+            });
+
+            // Chart 2: Principal vs Interest
+            if (charts.principalInterest) charts.principalInterest.destroy();
+            const ctx2 = document.getElementById('principalInterestChart').getContext('2d');
+            charts.principalInterest = new Chart(ctx2, {
+                type: 'bar',
+                data: {
+                    labels: data.schedule.map(s => `T${s.month}`),
+                    datasets: [{
+                        label: 'Gốc',
+                        data: data.schedule.map(s => s.principal),
+                        backgroundColor: '#10b981'
+                    }, {
+                        label: 'Lãi',
+                        data: data.schedule.map(s => s.interest),
+                        backgroundColor: '#ef4444'
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    scales: {
+                        x: { stacked: true },
+                        y: { 
+                            stacked: true,
+                            title: { display: true, text: 'Triệu VNĐ' }
+                        }
+                    }
+                }
+            });
+
+            // Chart 3: Prepayment Analysis
+            if (charts.prepayment) charts.prepayment.destroy();
+            const ctx3 = document.getElementById('prepaymentChart').getContext('2d');
+            charts.prepayment = new Chart(ctx3, {
+                type: 'line',
+                data: {
+                    labels: data.prepaymentAnalysis.map(p => `T${p.month}`),
+                    datasets: [{
+                        label: 'Lãi còn lại',
+                        data: data.prepaymentAnalysis.map(p => p.remainingInterest),
+                        borderColor: '#8b5cf6',
+                        tension: 0.4
+                    }, {
+                        label: 'Phí phạt',
+                        data: data.prepaymentAnalysis.map(p => p.penaltyAmount),
+                        borderColor: '#ef4444',
+                        tension: 0.4
+                    }, {
+                        label: 'Lãi tiết kiệm',
+                        data: data.prepaymentAnalysis.map(p => p.savingsInterest),
+                        borderColor: '#f59e0b',
+                        tension: 0.4
+                    }, {
+                        label: 'Lợi ích thuần',
+                        data: data.prepaymentAnalysis.map(p => p.netBenefit),
+                        borderColor: '#10b981',
+                        borderWidth: 3,
+                        tension: 0.4
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    scales: {
+                        y: { title: { display: true, text: 'Triệu VNĐ' } }
+                    }
+                }
+            });
+        }
+
+        function updateDetails(data) {
+            const selected = data.prepaymentAnalysis[data.prepaymentMonth - 1];
+            const isOptimal = data.prepaymentMonth === data.optimalMonth.month;
+            
+            const detailHtml = `
+                <h2>Chi Tiết Tháng ${data.prepaymentMonth} ${isOptimal ? '<span style="background: #10b981; color: white; padding: 5px 15px; border-radius: 20px; font-size: 0.7em; margin-left: 10px;">Tối ưu nhất</span>' : ''}</h2>
+                <div class="detail-grid">
+                    <div class="detail-item">
+                        <div class="label">Dư nợ còn lại</div>
+                        <div class="value">${formatCurrency(selected.remainingBalance)}</div>
+                    </div>
+                    <div class="detail-item negative">
+                        <div class="label">Phí phạt</div>
+                        <div class="value">${formatCurrency(selected.penaltyAmount)}</div>
+                    </div>
+                    <div class="detail-item positive">
+                        <div class="label">Lãi tiết kiệm được</div>
+                        <div class="value">${formatCurrency(selected.remainingInterest)}</div>
+                    </div>
+                    <div class="detail-item">
+                        <div class="label">Lãi nếu gửi TK</div>
+                        <div class="value">${formatCurrency(selected.savingsInterest)}</div>
+                    </div>
+                    <div class="detail-item">
+                        <div class="label">Tiết kiệm sau phạt</div>
+                        <div class="value">${formatCurrency(selected.totalSaved)}</div>
+                    </div>
+                    <div class="detail-item ${selected.netBenefit > 0 ? 'positive' : 'negative'}">
+                        <div class="label">Lợi ích thuần</div>
+                        <div class="value">${formatCurrency(selected.netBenefit)}</div>
+                    </div>
+                </div>
+                <div class="conclusion">
+                    <strong>Kết luận:</strong> ${
+                        selected.netBenefit > 0 
+                            ? `✅ Nên trả trước hạn. Bạn sẽ tiết kiệm <strong>${formatCurrency(selected.netBenefit)}</strong> so với việc gửi tiết kiệm.`
+                            : `❌ Không nên trả trước hạn. Gửi tiết kiệm có lợi hơn <strong>${formatCurrency(Math.abs(selected.netBenefit))}</strong>.`
+                    }
+                </div>
+            `;
+            document.getElementById('detailBox').innerHTML = detailHtml;
+        }
+
+        function update() {
+            const data = calculateLoan();
+            updateStats(data);
+            updateCharts(data);
+            updateDetails(data);
+        }
+
+        // Event listeners
+        document.querySelectorAll('input').forEach(input => {
+            input.addEventListener('input', update);
+        });
+
+        document.getElementById('prepaymentMonth').addEventListener('input', function() {
+            document.getElementById('prepaymentMonthValue').textContent = `Tháng ${this.value}`;
+        });
+
+        // Initial calculation
+        update();
+    </script>
 </body>
 </html>
