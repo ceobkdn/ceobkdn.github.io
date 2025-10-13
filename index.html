@@ -12,9 +12,24 @@
         }
         h1 {
             color: #333;
-            margin-bottom: 20px;
+            margin-bottom: 10px;
         }
-        #buttons {
+        .categories {
+            display: flex;
+            justify-content: center;
+            align-items: flex-start;
+            gap: 40px;
+            flex-wrap: wrap; /* để xuống hàng nếu màn hình nhỏ */
+            margin-top: 30px;
+        }
+        .category {
+            background: white;
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0 2px 6px rgba(0,0,0,0.1);
+            width: 250px;
+        }
+        .buttons {
             display: flex;
             flex-direction: column;
             gap: 10px;
@@ -37,41 +52,48 @@
     </style>
 </head>
 <body>
-    <h1>RF Tools</h1>
-    <div id="buttons"></div>
+    <h1>RF Lab Tools</h1>
+
+    <div class="categories">
+        <!-- RF Tools -->
+        <div class="category">
+            <h2>RF Tools</h2>
+            <div class="buttons" id="rf-buttons"></div>
+        </div>
+
+        <!-- Finance Tools -->
+        <div class="category">
+            <h2>Finance Tools</h2>
+            <div class="buttons" id="finance-buttons"></div>
+        </div>
+    </div>
+
     <script>
-        const links = [
+        const rfLinks = [
             { name: 'TDR', url: 'https://ceobkdn.github.io/tdr.html' },
             { name: 'Diff Mismatch', url: 'https://ceobkdn.github.io/diffmis.html' },
-             { name: 'Impedance Control', url: 'https://ceobkdn.github.io/impedanceControl.html' },
+            { name: 'Impedance Control', url: 'https://ceobkdn.github.io/impedanceControl.html' },
         ];
 
-        const buttonsContainer = document.getElementById('buttons');
-
-        links.forEach(link => {
-            const button = document.createElement('button');
-            button.textContent = link.name;
-            button.onclick = () => window.open(link.url, '_blank');
-            buttonsContainer.appendChild(button);
-        });
-    </script>
-
-    <h1>Finance Tools</h1>
-    <div id="buttons"></div>
-    <script>
-        const links2 = [
+        const financeLinks = [
             { name: 'Loan', url: 'https://ceobkdn.github.io/fin_loan_opt.html' },
         ];
 
-        const buttonsContainer2 = document.getElementById('buttons');
+        const rfContainer = document.getElementById('rf-buttons');
+        rfLinks.forEach(link => {
+            const btn = document.createElement('button');
+            btn.textContent = link.name;
+            btn.onclick = () => window.open(link.url, '_blank');
+            rfContainer.appendChild(btn);
+        });
 
-        links2.forEach(link => {
-            const button2 = document.createElement('button');
-            button2.textContent = link.name;
-            button2.onclick = () => window.open(link.url, '_blank');
-            buttonsContainer2.appendChild(button);
+        const financeContainer = document.getElementById('finance-buttons');
+        financeLinks.forEach(link => {
+            const btn = document.createElement('button');
+            btn.textContent = link.name;
+            btn.onclick = () => window.open(link.url, '_blank');
+            financeContainer.appendChild(btn);
         });
     </script>
 </body>
 </html>
-
