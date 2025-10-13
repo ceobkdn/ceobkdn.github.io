@@ -1,0 +1,321 @@
+import React, { useState, useMemo } from 'react';
+import { LineChart, Line, BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer, Area, AreaChart } from 'recharts';
+import { Calculator, TrendingUp, DollarSign, AlertCircle } from 'lucide-react';
+
+const LoanAnalyzer = () => {
+  const [principal, setPrincipal] = useState(500);
+  const [annualRate, setAnnualRate] = useState(9.6);
+  const [months, setMonths] = useState(12);
+  const [prepaymentMonth, setPrepaymentMonth] = useState(4);
+  const [penaltyRate, setPenaltyRate] = useState(2);
+  const [savingsRate, setSavingsRate] = useState(4.5);
+
+  const calculations = useMemo(() => {
+    const monthlyRate = annualRate / 100 / 12;
+    const monthlyPayment = (principal * monthlyRate * Math.pow(1 + monthlyRate, months)) / 
+                          (Math.pow(1 + monthlyRate, months) - 1);
+    
+    let balance = principal;
+    const schedule = [];
+    let totalInterest = 0;
+    let cumulativeInterest = 0;
+    
+    for (let month = 1; month <= months; month++) {
+      const interestPayment = balance * monthlyRate;
+      const principalPayment = monthlyPayment - interestPayment;
+      cumulativeInterest += interestPayment;
+      totalInterest += interestPayment;
+      
+      schedule.push({
+        month,
+        payment: monthlyPayment,
+        principal: principalPayment,
+        interest: interestPayment,
+        balance: balance - principalPayment,
+        cumulativeInterest,
+        interestPercent: (cumulativeInterest / totalInterest) * 100
+      });
+      
+      balance -= principalPayment;
+    }
+
+    // Tính toán chi phí và lợi ích trả trước hạn
+    const prepaymentAnalysis = [];
+    for (let month = 1; month <= months; month++) {
+      const paidInterest = schedule.slice(0, month).reduce((sum, s) => sum + s.interest, 0);
+      const remainingBalance = schedule[month - 1]?.balance || 0;
+      const penaltyAmount = remainingBalance * (penaltyRate / 100);
+      const remainingInterest = schedule.slice(month).reduce((sum, s) => sum + s.interest, 0);
+      
+      // Tính lãi tiết kiệm nếu gửi số tiền gốc còn lại
+      const savingsMonthlyRate = savingsRate / 100 / 12;
+      const remainingMonths = months - month;
+      const savingsInterest = remainingBalance * savingsMonthlyRate * remainingMonths;
+      
+      const netBenefit = remainingInterest - penaltyAmount - savingsInterest;
+      
+      prepaymentAnalysis.push({
+        month,
+        remainingBalance,
+        penaltyAmount,
+        remainingInterest,
+        savingsInterest,
+        netBenefit,
+        totalSaved: remainingInterest - penaltyAmount
+      });
+    }
+
+    const optimalMonth = prepaymentAnalysis.reduce((max, curr) => 
+      curr.netBenefit > max.netBenefit ? curr : max
+    );
+
+    return {
+      monthlyPayment,
+      schedule,
+      totalInterest,
+      prepaymentAnalysis,
+      optimalMonth
+    };
+  }, [principal, annualRate, months, prepaymentMonth, penaltyRate, savingsRate]);
+
+  const formatCurrency = (value) => {
+    return new Intl.NumberFormat('vi-VN').format(value.toFixed(0)) + ' tr';
+  };
+
+  const selectedPrepayment = calculations.prepaymentAnalysis[prepaymentMonth - 1];
+
+  return (
+    <div className="w-full max-w-7xl mx-auto p-6 bg-gradient-to-br from-blue-50 to-indigo-50">
+      <div className="bg-white rounded-xl shadow-lg p-6 mb-6">
+        <div className="flex items-center gap-3 mb-6">
+          <Calculator className="w-8 h-8 text-indigo-600" />
+          <h1 className="text-3xl font-bold text-gray-800">Phân Tích Khoản Vay & Tối Ưu Hóa</h1>
+        </div>
+
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-6">
+          <div className="space-y-2">
+            <label className="block text-sm font-medium text-gray-700">
+              Số tiền vay (triệu VNĐ)
+            </label>
+            <input
+              type="number"
+              value={principal}
+              onChange={(e) => setPrincipal(Number(e.target.value))}
+              className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-transparent"
+            />
+          </div>
+
+          <div className="space-y-2">
+            <label className="block text-sm font-medium text-gray-700">
+              Lãi suất (%/năm)
+            </label>
+            <input
+              type="number"
+              step="0.1"
+              value={annualRate}
+              onChange={(e) => setAnnualRate(Number(e.target.value))}
+              className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-transparent"
+            />
+          </div>
+
+          <div className="space-y-2">
+            <label className="block text-sm font-medium text-gray-700">
+              Thời hạn (tháng)
+            </label>
+            <input
+              type="number"
+              value={months}
+              onChange={(e) => setMonths(Number(e.target.value))}
+              className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-transparent"
+            />
+          </div>
+
+          <div className="space-y-2">
+            <label className="block text-sm font-medium text-gray-700">
+              Phí phạt trả trước (%)
+            </label>
+            <input
+              type="number"
+              step="0.1"
+              value={penaltyRate}
+              onChange={(e) => setPenaltyRate(Number(e.target.value))}
+              className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-transparent"
+            />
+          </div>
+
+          <div className="space-y-2">
+            <label className="block text-sm font-medium text-gray-700">
+              Lãi tiết kiệm (%/năm)
+            </label>
+            <input
+              type="number"
+              step="0.1"
+              value={savingsRate}
+              onChange={(e) => setSavingsRate(Number(e.target.value))}
+              className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-transparent"
+            />
+          </div>
+
+          <div className="space-y-2">
+            <label className="block text-sm font-medium text-gray-700">
+              Tháng trả trước hạn
+            </label>
+            <input
+              type="number"
+              min="1"
+              max={months}
+              value={prepaymentMonth}
+              onChange={(e) => setPrepaymentMonth(Number(e.target.value))}
+              className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-transparent"
+            />
+          </div>
+        </div>
+
+        <div className="grid grid-cols-1 md:grid-cols-4 gap-4 mb-6">
+          <div className="bg-gradient-to-br from-indigo-500 to-indigo-600 rounded-lg p-4 text-white">
+            <div className="flex items-center gap-2 mb-2">
+              <DollarSign className="w-5 h-5" />
+              <p className="text-sm opacity-90">Trả hàng tháng</p>
+            </div>
+            <p className="text-2xl font-bold">{formatCurrency(calculations.monthlyPayment)}</p>
+          </div>
+
+          <div className="bg-gradient-to-br from-purple-500 to-purple-600 rounded-lg p-4 text-white">
+            <div className="flex items-center gap-2 mb-2">
+              <TrendingUp className="w-5 h-5" />
+              <p className="text-sm opacity-90">Tổng lãi phải trả</p>
+            </div>
+            <p className="text-2xl font-bold">{formatCurrency(calculations.totalInterest)}</p>
+          </div>
+
+          <div className="bg-gradient-to-br from-green-500 to-green-600 rounded-lg p-4 text-white">
+            <div className="flex items-center gap-2 mb-2">
+              <AlertCircle className="w-5 h-5" />
+              <p className="text-sm opacity-90">Tháng tối ưu</p>
+            </div>
+            <p className="text-2xl font-bold">Tháng {calculations.optimalMonth.month}</p>
+          </div>
+
+          <div className="bg-gradient-to-br from-amber-500 to-amber-600 rounded-lg p-4 text-white">
+            <div className="flex items-center gap-2 mb-2">
+              <DollarSign className="w-5 h-5" />
+              <p className="text-sm opacity-90">Lợi ích tối đa</p>
+            </div>
+            <p className="text-2xl font-bold">{formatCurrency(calculations.optimalMonth.netBenefit)}</p>
+          </div>
+        </div>
+      </div>
+
+      <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-6">
+        <div className="bg-white rounded-xl shadow-lg p-6">
+          <h2 className="text-xl font-bold text-gray-800 mb-4">Phân Bố Lãi Suất Tích Lũy</h2>
+          <ResponsiveContainer width="100%" height={300}>
+            <AreaChart data={calculations.schedule}>
+              <CartesianGrid strokeDasharray="3 3" />
+              <XAxis dataKey="month" label={{ value: 'Tháng', position: 'insideBottom', offset: -5 }} />
+              <YAxis label={{ value: '% Tổng lãi', angle: -90, position: 'insideLeft' }} />
+              <Tooltip formatter={(value) => `${value.toFixed(1)}%`} />
+              <Area type="monotone" dataKey="interestPercent" stroke="#8b5cf6" fill="#a78bfa" />
+            </AreaChart>
+          </ResponsiveContainer>
+          <p className="text-sm text-gray-600 mt-2 text-center">
+            Sau {prepaymentMonth} tháng: <span className="font-bold text-indigo-600">
+              {calculations.schedule[prepaymentMonth - 1]?.interestPercent.toFixed(1)}%
+            </span> tổng lãi đã trả
+          </p>
+        </div>
+
+        <div className="bg-white rounded-xl shadow-lg p-6">
+          <h2 className="text-xl font-bold text-gray-800 mb-4">Gốc vs Lãi Hàng Tháng</h2>
+          <ResponsiveContainer width="100%" height={300}>
+            <BarChart data={calculations.schedule}>
+              <CartesianGrid strokeDasharray="3 3" />
+              <XAxis dataKey="month" label={{ value: 'Tháng', position: 'insideBottom', offset: -5 }} />
+              <YAxis label={{ value: 'Triệu VNĐ', angle: -90, position: 'insideLeft' }} />
+              <Tooltip formatter={(value) => formatCurrency(value)} />
+              <Legend />
+              <Bar dataKey="principal" stackId="a" fill="#10b981" name="Gốc" />
+              <Bar dataKey="interest" stackId="a" fill="#ef4444" name="Lãi" />
+            </BarChart>
+          </ResponsiveContainer>
+        </div>
+      </div>
+
+      <div className="bg-white rounded-xl shadow-lg p-6 mb-6">
+        <h2 className="text-xl font-bold text-gray-800 mb-4">Phân Tích Lợi Ích Trả Trước Hạn</h2>
+        <ResponsiveContainer width="100%" height={300}>
+          <LineChart data={calculations.prepaymentAnalysis}>
+            <CartesianGrid strokeDasharray="3 3" />
+            <XAxis dataKey="month" label={{ value: 'Tháng trả trước', position: 'insideBottom', offset: -5 }} />
+            <YAxis label={{ value: 'Triệu VNĐ', angle: -90, position: 'insideLeft' }} />
+            <Tooltip formatter={(value) => formatCurrency(value)} />
+            <Legend />
+            <Line type="monotone" dataKey="remainingInterest" stroke="#8b5cf6" name="Lãi còn lại" strokeWidth={2} />
+            <Line type="monotone" dataKey="penaltyAmount" stroke="#ef4444" name="Phí phạt" strokeWidth={2} />
+            <Line type="monotone" dataKey="savingsInterest" stroke="#f59e0b" name="Lãi tiết kiệm" strokeWidth={2} />
+            <Line type="monotone" dataKey="netBenefit" stroke="#10b981" name="Lợi ích thuần" strokeWidth={3} />
+          </LineChart>
+        </ResponsiveContainer>
+      </div>
+
+      {selectedPrepayment && (
+        <div className="bg-white rounded-xl shadow-lg p-6">
+          <h2 className="text-xl font-bold text-gray-800 mb-4">
+            Chi Tiết Tháng {prepaymentMonth}
+            {prepaymentMonth === calculations.optimalMonth.month && (
+              <span className="ml-2 text-sm bg-green-100 text-green-800 px-3 py-1 rounded-full">
+                Tối ưu nhất
+              </span>
+            )}
+          </h2>
+          
+          <div className="grid grid-cols-2 md:grid-cols-3 gap-4">
+            <div className="border-l-4 border-indigo-500 pl-4">
+              <p className="text-sm text-gray-600">Dư nợ còn lại</p>
+              <p className="text-xl font-bold text-gray-800">{formatCurrency(selectedPrepayment.remainingBalance)}</p>
+            </div>
+            
+            <div className="border-l-4 border-red-500 pl-4">
+              <p className="text-sm text-gray-600">Phí phạt ({penaltyRate}%)</p>
+              <p className="text-xl font-bold text-gray-800">{formatCurrency(selectedPrepayment.penaltyAmount)}</p>
+            </div>
+            
+            <div className="border-l-4 border-purple-500 pl-4">
+              <p className="text-sm text-gray-600">Lãi tiết kiệm được</p>
+              <p className="text-xl font-bold text-gray-800">{formatCurrency(selectedPrepayment.remainingInterest)}</p>
+            </div>
+            
+            <div className="border-l-4 border-amber-500 pl-4">
+              <p className="text-sm text-gray-600">Lãi nếu gửi TK</p>
+              <p className="text-xl font-bold text-gray-800">{formatCurrency(selectedPrepayment.savingsInterest)}</p>
+            </div>
+            
+            <div className="border-l-4 border-blue-500 pl-4">
+              <p className="text-sm text-gray-600">Tiết kiệm sau phạt</p>
+              <p className="text-xl font-bold text-gray-800">{formatCurrency(selectedPrepayment.totalSaved)}</p>
+            </div>
+            
+            <div className="border-l-4 border-green-500 pl-4">
+              <p className="text-sm text-gray-600">Lợi ích thuần</p>
+              <p className={`text-xl font-bold ${selectedPrepayment.netBenefit > 0 ? 'text-green-600' : 'text-red-600'}`}>
+                {formatCurrency(selectedPrepayment.netBenefit)}
+              </p>
+            </div>
+          </div>
+
+          <div className="mt-4 p-4 bg-blue-50 rounded-lg">
+            <p className="text-sm text-gray-700">
+              <strong>Kết luận:</strong> {
+                selectedPrepayment.netBenefit > 0 
+                  ? `Nên trả trước hạn. Bạn sẽ tiết kiệm ${formatCurrency(selectedPrepayment.netBenefit)} so với việc gửi tiết kiệm.`
+                  : `Không nên trả trước hạn. Gửi tiết kiệm có lợi hơn ${formatCurrency(Math.abs(selectedPrepayment.netBenefit))}.`
+              }
+            </p>
+          </div>
+        </div>
+      )}
+    </div>
+  );
+};
+
+export default LoanAnalyzer;
