@@ -40,6 +40,11 @@
             margin-bottom: 10px;
         }
 
+        .header p {
+            opacity: 0.95;
+            font-size: 1.1em;
+        }
+
         .controls {
             padding: 30px;
             background: #f8f9fa;
@@ -125,63 +130,118 @@
             height: 300px;
         }
 
-        .detail-box {
+        .comparison-box {
             margin: 30px;
-            padding: 25px;
-            background: #f8f9fa;
+            padding: 30px;
+            background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%);
             border-radius: 12px;
-            border-left: 5px solid #667eea;
+            border: 3px solid #667eea;
         }
 
-        .detail-box h2 {
+        .comparison-box h2 {
             color: #333;
-            margin-bottom: 20px;
-            font-size: 1.5em;
+            margin-bottom: 25px;
+            font-size: 1.8em;
+            text-align: center;
         }
 
-        .detail-grid {
+        .comparison-grid {
             display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-            gap: 20px;
+            grid-template-columns: 1fr 1fr;
+            gap: 30px;
+            margin-bottom: 30px;
         }
 
-        .detail-item {
-            padding: 15px;
+        .option-card {
             background: white;
-            border-radius: 8px;
-            border-left: 4px solid #667eea;
+            padding: 25px;
+            border-radius: 12px;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+            border: 3px solid transparent;
+            transition: all 0.3s;
         }
 
-        .detail-item .label {
-            font-size: 0.85em;
+        .option-card.winner {
+            border-color: #10b981;
+            box-shadow: 0 6px 25px rgba(16, 185, 129, 0.3);
+            transform: scale(1.02);
+        }
+
+        .option-card h3 {
+            color: #667eea;
+            font-size: 1.4em;
+            margin-bottom: 20px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .option-card .badge {
+            background: #10b981;
+            color: white;
+            padding: 5px 15px;
+            border-radius: 20px;
+            font-size: 0.6em;
+            margin-left: auto;
+        }
+
+        .detail-row {
+            display: flex;
+            justify-content: space-between;
+            padding: 12px 0;
+            border-bottom: 1px solid #e9ecef;
+        }
+
+        .detail-row:last-child {
+            border-bottom: none;
+            margin-top: 10px;
+            padding-top: 20px;
+            border-top: 2px solid #667eea;
+        }
+
+        .detail-row .label {
             color: #666;
-            margin-bottom: 5px;
+            font-weight: 500;
         }
 
-        .detail-item .value {
-            font-size: 1.3em;
+        .detail-row .value {
             font-weight: bold;
             color: #333;
         }
 
-        .conclusion {
-            margin-top: 20px;
-            padding: 20px;
-            background: white;
-            border-radius: 8px;
-            border: 2px solid #667eea;
+        .detail-row.total {
+            font-size: 1.2em;
         }
 
-        .conclusion strong {
+        .detail-row.total .value {
             color: #667eea;
         }
 
-        .positive {
-            border-left-color: #10b981 !important;
+        .conclusion {
+            background: white;
+            padding: 25px;
+            border-radius: 12px;
+            text-align: center;
+            font-size: 1.1em;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.1);
         }
 
-        .negative {
-            border-left-color: #ef4444 !important;
+        .conclusion .result {
+            font-size: 1.5em;
+            font-weight: bold;
+            margin: 15px 0;
+            color: #10b981;
+        }
+
+        .conclusion .difference {
+            color: #667eea;
+            font-weight: bold;
+        }
+
+        @media (max-width: 1024px) {
+            .comparison-grid {
+                grid-template-columns: 1fr;
+            }
         }
 
         @media (max-width: 768px) {
@@ -198,8 +258,8 @@
 <body>
     <div class="container">
         <div class="header">
-            <h1>📊 Phân Tích Khoản Vay & Tối Ưu Hóa</h1>
-            <p>Công cụ phân tích và tìm thời điểm tối ưu để trả nợ trước hạn</p>
+            <h1>📊 So Sánh: Trả Trước Hạn vs Gửi Tiết Kiệm</h1>
+            <p>Tìm phương án tối ưu nhất cho số tiền của bạn</p>
         </div>
 
         <div class="controls">
@@ -208,7 +268,7 @@
                 <input type="number" id="principal" value="500" min="1" step="10">
             </div>
             <div class="input-group">
-                <label for="annualRate">Lãi suất (%/năm)</label>
+                <label for="annualRate">Lãi suất vay (%/năm)</label>
                 <input type="number" id="annualRate" value="9.6" min="0" step="0.1">
             </div>
             <div class="input-group">
@@ -224,36 +284,36 @@
                 <input type="number" id="savingsRate" value="4.5" min="0" step="0.1">
             </div>
             <div class="input-group">
-                <label for="prepaymentMonth">Tháng trả trước hạn</label>
-                <input type="range" id="prepaymentMonth" value="4" min="1" max="12" step="1">
-                <span id="prepaymentMonthValue" style="text-align: center; font-weight: bold; color: #667eea; margin-top: 5px;">Tháng 4</span>
+                <label for="prepaymentMonth">Tháng đang xem xét</label>
+                <input type="range" id="prepaymentMonth" value="5" min="1" max="12" step="1">
+                <span id="prepaymentMonthValue" style="text-align: center; font-weight: bold; color: #667eea; margin-top: 5px;">Tháng 5</span>
             </div>
         </div>
 
         <div class="stats-grid" id="statsGrid"></div>
 
+        <div class="comparison-box" id="comparisonBox"></div>
+
         <div class="charts-grid">
             <div class="chart-container">
-                <h2>Phân Bố Lãi Suất Tích Lũy</h2>
+                <h2>Lợi Ích Thuần Theo Tháng</h2>
                 <div class="chart-wrapper">
-                    <canvas id="interestChart"></canvas>
+                    <canvas id="benefitChart"></canvas>
                 </div>
+                <p style="text-align: center; color: #666; margin-top: 15px; font-size: 0.9em;">
+                    Giá trị dương = Trả trước hạn có lợi hơn
+                </p>
             </div>
             <div class="chart-container">
-                <h2>Gốc vs Lãi Hàng Tháng</h2>
+                <h2>Tổng Chi Phí So Sánh</h2>
                 <div class="chart-wrapper">
-                    <canvas id="principalInterestChart"></canvas>
+                    <canvas id="costChart"></canvas>
                 </div>
-            </div>
-            <div class="chart-container" style="grid-column: 1 / -1;">
-                <h2>Phân Tích Lợi Ích Trả Trước Hạn</h2>
-                <div class="chart-wrapper" style="height: 350px;">
-                    <canvas id="prepaymentChart"></canvas>
-                </div>
+                <p style="text-align: center; color: #666; margin-top: 15px; font-size: 0.9em;">
+                    Chi phí thấp hơn = Phương án tốt hơn
+                </p>
             </div>
         </div>
-
-        <div class="detail-box" id="detailBox"></div>
     </div>
 
     <script>
@@ -271,7 +331,6 @@
             const savingsRate = parseFloat(document.getElementById('savingsRate').value);
             const prepaymentMonth = parseInt(document.getElementById('prepaymentMonth').value);
 
-            // Update slider max
             document.getElementById('prepaymentMonth').max = months;
 
             const monthlyRate = annualRate / 100 / 12;
@@ -281,12 +340,10 @@
             let balance = principal;
             const schedule = [];
             let totalInterest = 0;
-            let cumulativeInterest = 0;
 
             for (let month = 1; month <= months; month++) {
                 const interestPayment = balance * monthlyRate;
                 const principalPayment = monthlyPayment - interestPayment;
-                cumulativeInterest += interestPayment;
                 totalInterest += interestPayment;
 
                 schedule.push({
@@ -294,39 +351,52 @@
                     payment: monthlyPayment,
                     principal: principalPayment,
                     interest: interestPayment,
-                    balance: balance - principalPayment,
-                    cumulativeInterest,
-                    interestPercent: (cumulativeInterest / totalInterest) * 100
+                    balance: balance - principalPayment
                 });
 
                 balance -= principalPayment;
             }
 
-            // Calculate prepayment analysis
-            const prepaymentAnalysis = [];
+            // Tính toán chi tiết cho từng tháng
+            const analysis = [];
             for (let month = 1; month <= months; month++) {
+                const paidInterest = schedule.slice(0, month).reduce((sum, s) => sum + s.interest, 0);
                 const remainingBalance = schedule[month - 1].balance;
                 const penaltyAmount = remainingBalance * (penaltyRate / 100);
-                const remainingInterest = schedule.slice(month).reduce((sum, s) => sum + s.interest, 0);
                 
-                const savingsMonthlyRate = savingsRate / 100 / 12;
+                // PHƯƠNG ÁN 1: Trả trước hạn
+                const totalCostPrepay = paidInterest + penaltyAmount;
+                
+                // PHƯƠNG ÁN 2: Gửi tiết kiệm + tiếp tục trả nợ
                 const remainingMonths = months - month;
+                const savingsMonthlyRate = savingsRate / 100 / 12;
+                
+                // Lãi tiết kiệm nhận được
                 const savingsInterest = remainingBalance * savingsMonthlyRate * remainingMonths;
                 
-                const netBenefit = remainingInterest - penaltyAmount - savingsInterest;
+                // Lãi vay còn phải trả
+                const remainingInterest = schedule.slice(month).reduce((sum, s) => sum + s.interest, 0);
+                
+                // Tổng chi phí = Lãi đã trả + Lãi còn phải trả - Lãi tiết kiệm nhận được
+                const totalCostSavings = paidInterest + remainingInterest - savingsInterest;
+                
+                // Lợi ích thuần (số tiền tiết kiệm được khi chọn trả trước hạn thay vì gửi TK)
+                const netBenefit = totalCostSavings - totalCostPrepay;
 
-                prepaymentAnalysis.push({
+                analysis.push({
                     month,
                     remainingBalance,
+                    paidInterest,
                     penaltyAmount,
                     remainingInterest,
                     savingsInterest,
-                    netBenefit,
-                    totalSaved: remainingInterest - penaltyAmount
+                    totalCostPrepay,
+                    totalCostSavings,
+                    netBenefit
                 });
             }
 
-            const optimalMonth = prepaymentAnalysis.reduce((max, curr) => 
+            const optimalMonth = analysis.reduce((max, curr) => 
                 curr.netBenefit > max.netBenefit ? curr : max
             );
 
@@ -334,7 +404,7 @@
                 monthlyPayment,
                 schedule,
                 totalInterest,
-                prepaymentAnalysis,
+                analysis,
                 optimalMonth,
                 prepaymentMonth
             };
@@ -347,171 +417,198 @@
                     <div class="value">${formatCurrency(data.monthlyPayment)}</div>
                 </div>
                 <div class="stat-card">
-                    <h3>📈 Tổng lãi phải trả</h3>
+                    <h3>📈 Tổng lãi (nếu giữ đủ kỳ)</h3>
                     <div class="value">${formatCurrency(data.totalInterest)}</div>
                 </div>
                 <div class="stat-card">
-                    <h3>🎯 Tháng tối ưu</h3>
+                    <h3>🎯 Tháng tối ưu nhất</h3>
                     <div class="value">Tháng ${data.optimalMonth.month}</div>
                 </div>
                 <div class="stat-card">
-                    <h3>✨ Lợi ích tối đa</h3>
+                    <h3>✨ Tiết kiệm tối đa</h3>
                     <div class="value">${formatCurrency(data.optimalMonth.netBenefit)}</div>
                 </div>
             `;
             document.getElementById('statsGrid').innerHTML = statsHtml;
         }
 
+        function updateComparison(data) {
+            const selected = data.analysis[data.prepaymentMonth - 1];
+            const isOptimal = data.prepaymentMonth === data.optimalMonth.month;
+            const isPrepayBetter = selected.netBenefit > 0;
+            
+            const comparisonHtml = `
+                <h2>📊 So Sánh Chi Tiết Tháng ${data.prepaymentMonth} ${isOptimal ? '⭐' : ''}</h2>
+                
+                <div class="comparison-grid">
+                    <div class="option-card ${isPrepayBetter ? 'winner' : ''}">
+                        <h3>
+                            🏦 Trả Trước Hạn
+                            ${isPrepayBetter ? '<span class="badge">TỐT HỌN</span>' : ''}
+                        </h3>
+                        <div class="detail-row">
+                            <span class="label">Dư nợ còn lại</span>
+                            <span class="value">${formatCurrency(selected.remainingBalance)}</span>
+                        </div>
+                        <div class="detail-row">
+                            <span class="label">Lãi đã trả (${data.prepaymentMonth} tháng)</span>
+                            <span class="value">${formatCurrency(selected.paidInterest)}</span>
+                        </div>
+                        <div class="detail-row">
+                            <span class="label">Phí phạt (${document.getElementById('penaltyRate').value}%)</span>
+                            <span class="value">${formatCurrency(selected.penaltyAmount)}</span>
+                        </div>
+                        <div class="detail-row total">
+                            <span class="label">💰 TỔNG CHI PHÍ</span>
+                            <span class="value">${formatCurrency(selected.totalCostPrepay)}</span>
+                        </div>
+                    </div>
+
+                    <div class="option-card ${!isPrepayBetter ? 'winner' : ''}">
+                        <h3>
+                            💎 Gửi TK + Trả Đều
+                            ${!isPrepayBetter ? '<span class="badge">TỐT HỌN</span>' : ''}
+                        </h3>
+                        <div class="detail-row">
+                            <span class="label">Lãi đã trả</span>
+                            <span class="value">${formatCurrency(selected.paidInterest)}</span>
+                        </div>
+                        <div class="detail-row">
+                            <span class="label">Lãi còn phải trả</span>
+                            <span class="value">${formatCurrency(selected.remainingInterest)}</span>
+                        </div>
+                        <div class="detail-row" style="color: #10b981;">
+                            <span class="label">Lãi TK nhận được (${document.getElementById('savingsRate').value}%)</span>
+                            <span class="value">-${formatCurrency(selected.savingsInterest)}</span>
+                        </div>
+                        <div class="detail-row total">
+                            <span class="label">💰 TỔNG CHI PHÍ</span>
+                            <span class="value">${formatCurrency(selected.totalCostSavings)}</span>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="conclusion">
+                    <div style="font-size: 1.3em; color: #666;">Kết luận</div>
+                    <div class="result">
+                        ${isPrepayBetter 
+                            ? '✅ NÊN TRẢ TRƯỚC HẠN' 
+                            : '✅ NÊN GỬI TIẾT KIỆM + TRẢ ĐỀU'
+                        }
+                    </div>
+                    <div>
+                        ${isPrepayBetter 
+                            ? `Bạn sẽ tiết kiệm được <span class="difference">${formatCurrency(selected.netBenefit)}</span> khi chọn trả trước hạn`
+                            : `Bạn sẽ tiết kiệm được <span class="difference">${formatCurrency(Math.abs(selected.netBenefit))}</span> khi chọn gửi tiết kiệm`
+                        }
+                    </div>
+                    ${isOptimal ? '<div style="margin-top: 15px; color: #f59e0b; font-weight: bold;">⭐ Đây là tháng tối ưu nhất để trả trước hạn!</div>' : ''}
+                </div>
+            `;
+            
+            document.getElementById('comparisonBox').innerHTML = comparisonHtml;
+        }
+
         function updateCharts(data) {
-            // Chart 1: Interest Accumulation
-            if (charts.interest) charts.interest.destroy();
-            const ctx1 = document.getElementById('interestChart').getContext('2d');
-            charts.interest = new Chart(ctx1, {
-                type: 'line',
+            // Chart 1: Net Benefit
+            if (charts.benefit) charts.benefit.destroy();
+            const ctx1 = document.getElementById('benefitChart').getContext('2d');
+            
+            const benefitColors = data.analysis.map(a => a.netBenefit > 0 ? '#10b981' : '#ef4444');
+            
+            charts.benefit = new Chart(ctx1, {
+                type: 'bar',
                 data: {
-                    labels: data.schedule.map(s => `T${s.month}`),
+                    labels: data.analysis.map(a => `T${a.month}`),
                     datasets: [{
-                        label: '% Lãi tích lũy',
-                        data: data.schedule.map(s => s.interestPercent),
-                        borderColor: '#ef4444',
-                        backgroundColor: 'rgba(239, 68, 68, 0.1)',
-                        fill: true,
-                        tension: 0.4
+                        label: 'Lợi ích thuần (Trả trước - Gửi TK)',
+                        data: data.analysis.map(a => a.netBenefit),
+                        backgroundColor: benefitColors,
+                        borderColor: benefitColors,
+                        borderWidth: 2
                     }]
                 },
                 options: {
                     responsive: true,
                     maintainAspectRatio: false,
                     plugins: {
-                        legend: { display: false }
+                        legend: { display: false },
+                        tooltip: {
+                            callbacks: {
+                                label: function(context) {
+                                    return formatCurrency(context.parsed.y);
+                                }
+                            }
+                        }
                     },
                     scales: {
                         y: {
-                            beginAtZero: true,
-                            title: { display: true, text: '% Tổng lãi' }
+                            title: { display: true, text: 'Triệu VNĐ' },
+                            grid: { color: '#e9ecef' }
+                        },
+                        x: {
+                            grid: { display: false }
                         }
                     }
                 }
             });
 
-            // Chart 2: Principal vs Interest
-            if (charts.principalInterest) charts.principalInterest.destroy();
-            const ctx2 = document.getElementById('principalInterestChart').getContext('2d');
-            charts.principalInterest = new Chart(ctx2, {
-                type: 'bar',
-                data: {
-                    labels: data.schedule.map(s => `T${s.month}`),
-                    datasets: [{
-                        label: 'Gốc',
-                        data: data.schedule.map(s => s.principal),
-                        backgroundColor: '#10b981'
-                    }, {
-                        label: 'Lãi',
-                        data: data.schedule.map(s => s.interest),
-                        backgroundColor: '#ef4444'
-                    }]
-                },
-                options: {
-                    responsive: true,
-                    maintainAspectRatio: false,
-                    scales: {
-                        x: { stacked: true },
-                        y: { 
-                            stacked: true,
-                            title: { display: true, text: 'Triệu VNĐ' }
-                        }
-                    }
-                }
-            });
-
-            // Chart 3: Prepayment Analysis
-            if (charts.prepayment) charts.prepayment.destroy();
-            const ctx3 = document.getElementById('prepaymentChart').getContext('2d');
-            charts.prepayment = new Chart(ctx3, {
+            // Chart 2: Cost Comparison
+            if (charts.cost) charts.cost.destroy();
+            const ctx2 = document.getElementById('costChart').getContext('2d');
+            
+            charts.cost = new Chart(ctx2, {
                 type: 'line',
                 data: {
-                    labels: data.prepaymentAnalysis.map(p => `T${p.month}`),
+                    labels: data.analysis.map(a => `T${a.month}`),
                     datasets: [{
-                        label: 'Lãi còn lại',
-                        data: data.prepaymentAnalysis.map(p => p.remainingInterest),
-                        borderColor: '#8b5cf6',
-                        tension: 0.4
-                    }, {
-                        label: 'Phí phạt',
-                        data: data.prepaymentAnalysis.map(p => p.penaltyAmount),
-                        borderColor: '#ef4444',
-                        tension: 0.4
-                    }, {
-                        label: 'Lãi tiết kiệm',
-                        data: data.prepaymentAnalysis.map(p => p.savingsInterest),
-                        borderColor: '#f59e0b',
-                        tension: 0.4
-                    }, {
-                        label: 'Lợi ích thuần',
-                        data: data.prepaymentAnalysis.map(p => p.netBenefit),
-                        borderColor: '#10b981',
+                        label: 'Trả trước hạn',
+                        data: data.analysis.map(a => a.totalCostPrepay),
+                        borderColor: '#667eea',
+                        backgroundColor: 'rgba(102, 126, 234, 0.1)',
                         borderWidth: 3,
-                        tension: 0.4
+                        tension: 0.4,
+                        fill: true
+                    }, {
+                        label: 'Gửi TK + Trả đều',
+                        data: data.analysis.map(a => a.totalCostSavings),
+                        borderColor: '#f59e0b',
+                        backgroundColor: 'rgba(245, 158, 11, 0.1)',
+                        borderWidth: 3,
+                        tension: 0.4,
+                        fill: true
                     }]
                 },
                 options: {
                     responsive: true,
                     maintainAspectRatio: false,
+                    plugins: {
+                        tooltip: {
+                            callbacks: {
+                                label: function(context) {
+                                    return context.dataset.label + ': ' + formatCurrency(context.parsed.y);
+                                }
+                            }
+                        }
+                    },
                     scales: {
-                        y: { title: { display: true, text: 'Triệu VNĐ' } }
+                        y: {
+                            title: { display: true, text: 'Tổng chi phí (triệu VNĐ)' },
+                            grid: { color: '#e9ecef' }
+                        },
+                        x: {
+                            grid: { display: false }
+                        }
                     }
                 }
             });
-        }
-
-        function updateDetails(data) {
-            const selected = data.prepaymentAnalysis[data.prepaymentMonth - 1];
-            const isOptimal = data.prepaymentMonth === data.optimalMonth.month;
-            
-            const detailHtml = `
-                <h2>Chi Tiết Tháng ${data.prepaymentMonth} ${isOptimal ? '<span style="background: #10b981; color: white; padding: 5px 15px; border-radius: 20px; font-size: 0.7em; margin-left: 10px;">Tối ưu nhất</span>' : ''}</h2>
-                <div class="detail-grid">
-                    <div class="detail-item">
-                        <div class="label">Dư nợ còn lại</div>
-                        <div class="value">${formatCurrency(selected.remainingBalance)}</div>
-                    </div>
-                    <div class="detail-item negative">
-                        <div class="label">Phí phạt</div>
-                        <div class="value">${formatCurrency(selected.penaltyAmount)}</div>
-                    </div>
-                    <div class="detail-item positive">
-                        <div class="label">Lãi tiết kiệm được</div>
-                        <div class="value">${formatCurrency(selected.remainingInterest)}</div>
-                    </div>
-                    <div class="detail-item">
-                        <div class="label">Lãi nếu gửi TK</div>
-                        <div class="value">${formatCurrency(selected.savingsInterest)}</div>
-                    </div>
-                    <div class="detail-item">
-                        <div class="label">Tiết kiệm sau phạt</div>
-                        <div class="value">${formatCurrency(selected.totalSaved)}</div>
-                    </div>
-                    <div class="detail-item ${selected.netBenefit > 0 ? 'positive' : 'negative'}">
-                        <div class="label">Lợi ích thuần</div>
-                        <div class="value">${formatCurrency(selected.netBenefit)}</div>
-                    </div>
-                </div>
-                <div class="conclusion">
-                    <strong>Kết luận:</strong> ${
-                        selected.netBenefit > 0 
-                            ? `✅ Nên trả trước hạn. Bạn sẽ tiết kiệm <strong>${formatCurrency(selected.netBenefit)}</strong> so với việc gửi tiết kiệm.`
-                            : `❌ Không nên trả trước hạn. Gửi tiết kiệm có lợi hơn <strong>${formatCurrency(Math.abs(selected.netBenefit))}</strong>.`
-                    }
-                </div>
-            `;
-            document.getElementById('detailBox').innerHTML = detailHtml;
         }
 
         function update() {
             const data = calculateLoan();
             updateStats(data);
+            updateComparison(data);
             updateCharts(data);
-            updateDetails(data);
         }
 
         // Event listeners
