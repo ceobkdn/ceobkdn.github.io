@@ -60,7 +60,13 @@
             <h2>RF Tools</h2>
             <div class="buttons" id="rf-buttons"></div>
         </div>
-
+        
+        <!-- Finance Tools -->
+        <div class="category">
+            <h2>Korean</h2>
+            <div class="buttons" id="korean-buttons"></div>
+        </div>
+        
         <!-- Finance Tools -->
         <div class="category">
             <h2>Finance Tools</h2>
@@ -77,9 +83,10 @@
 
         const financeLinks = [
             { name: 'Loan', url: 'https://ceobkdn.github.io/fin_loan_opt.html' },
+        ];
+        const koreanLinks = [
             { name: 'Topik II - Grammar 1', url: 'https://ceobkdn.github.io/topik_gram_1.html' },
         ];
-
         const rfContainer = document.getElementById('rf-buttons');
         rfLinks.forEach(link => {
             const btn = document.createElement('button');
@@ -87,7 +94,13 @@
             btn.onclick = () => window.open(link.url, '_blank');
             rfContainer.appendChild(btn);
         });
-
+        const koreanContainer = document.getElementById('korean-buttons');
+        koreanLinks.forEach(link => {
+            const btn = document.createElement('button');
+            btn.textContent = link.name;
+            btn.onclick = () => window.open(link.url, '_blank');
+            koreanContainer.appendChild(btn);
+        });
         const financeContainer = document.getElementById('finance-buttons');
         financeLinks.forEach(link => {
             const btn = document.createElement('button');
