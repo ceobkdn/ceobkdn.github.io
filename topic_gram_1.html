@@ -1,0 +1,187 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Flashcard Ngữ Pháp Tiếng Hàn</title>
+
+<style>
+body {
+    font-family: Arial, sans-serif;
+    margin: 0;
+    background: #f4f6f9;
+}
+
+header {
+    background: #4a6cf7;
+    color: white;
+    padding: 15px;
+    text-align: center;
+    font-size: 22px;
+    font-weight: bold;
+}
+
+#search {
+    width: 90%;
+    margin: 15px auto;
+    display: block;
+    padding: 10px;
+    font-size: 16px;
+}
+
+.container {
+    display: flex;
+}
+
+.sidebar {
+    width: 250px;
+    height: 100vh;
+    overflow-y: auto;
+    background: white;
+    border-right: 1px solid #ddd;
+    padding: 10px;
+}
+
+.sidebar a {
+    display: block;
+    padding: 6px;
+    text-decoration: none;
+    color: #333;
+    border-radius: 6px;
+}
+
+.sidebar a:hover {
+    background: #4a6cf7;
+    color: white;
+}
+
+.content {
+    flex: 1;
+    padding: 20px;
+}
+
+.card {
+    background: white;
+    border-radius: 12px;
+    padding: 20px;
+    margin-bottom: 15px;
+    cursor: pointer;
+    transition: 0.3s;
+    box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+}
+
+.card:hover {
+    transform: scale(1.02);
+}
+
+.front {
+    font-size: 20px;
+    font-weight: bold;
+}
+
+.back {
+    display: none;
+    margin-top: 10px;
+    color: #444;
+}
+
+.show .back {
+    display: block;
+}
+
+.number {
+    color: #4a6cf7;
+    font-weight: bold;
+}
+</style>
+</head>
+
+<body>
+
+<header>Flashcard Ngữ Pháp Tiếng Hàn (Top 30)</header>
+
+<input type="text" id="search" placeholder="Tìm cấu trúc...">
+
+<div class="container">
+
+<div class="sidebar" id="menu"></div>
+
+<div class="content" id="cards"></div>
+
+</div>
+
+<script>
+
+const data = [
+{n:1, g:"-다가", m:"Chuyển hành động (đang → chuyển)", e:"집에 가다가 시장에 들려서 과자를 샀다."},
+{n:2, g:"-고 나서", m:"Sau khi hoàn thành", e:"어제 퇴근하고 나서 친구들과 만났다."},
+{n:3, g:"-(으)ㄴ/는데", m:"Tương phản / dẫn dắt", e:"이 식당은 음식값은 저렴한데 맛이 별로 없다."},
+{n:4, g:"-(으)려고", m:"Mục đích", e:"고향에 가려고 기차표를 예매했다."},
+{n:5, g:"-(으)려면", m:"Nếu muốn", e:"버스를 타려면 기다려야 한다."},
+{n:6, g:"-느라고", m:"Vì (bận làm gì đó)", e:"시장에 가느라고 늦었다."},
+{n:7, g:"-아/어야", m:"Phải / điều kiện cần", e:"예매를 해야 볼 수 있다."},
+{n:8, g:"-(으)ㄹ까 봐", m:"Sợ rằng", e:"넘어질까 봐 조심했다."},
+{n:9, g:"-거나", m:"Hoặc", e:"영화를 보거나 책을 읽는다."},
+{n:10, g:"-자마자", m:"Ngay khi", e:"눕자마자 잠이 들었다."},
+{n:11, g:"-(으)ㄹ수록", m:"Càng... càng", e:"시간이 지날수록 후회한다."},
+{n:12, g:"-아/어서", m:"Vì / rồi", e:"열이 나서 못 갔다."},
+{n:13, g:"-아/어서 그런지", m:"Có lẽ vì", e:"주말이라 그런지 사람이 많다."},
+{n:14, g:"-더니", m:"Trải nghiệm rồi thấy", e:"날씨가 따뜻하더니 추워졌다."},
+{n:15, g:"-(으)ㄹ지", m:"Không biết / phân vân", e:"무슨 옷을 입을지 모르겠다."},
+{n:16, g:"-(으)면서", m:"Vừa... vừa...", e:"노래를 들으면서 운전한다."},
+{n:17, g:"-(으)니까", m:"Vì / kết quả", e:"집에 오니까 신문이 쌓여 있었다."},
+{n:18, g:"-(으)면", m:"Nếu", e:"파도가 높으면 수영 못 한다."},
+{n:19, g:"-든지", m:"Dù / bất kể", e:"무엇을 하든지 최선을 다하자."},
+{n:20, g:"-(으)ㄴ/는 데다가", m:"Thêm vào đó", e:"술을 좋아하는 데다가 친구도 많다."},
+{n:21, g:"-(으)ㄴ/는 대신에", m:"Thay vì", e:"등산 대신 영화 봤다."},
+{n:22, g:"-아/어도", m:"Dù... vẫn", e:"바빠도 운동해야 한다."},
+{n:23, g:"-는 김에", m:"Nhân tiện", e:"가는 김에 친구를 만났다."},
+{n:24, g:"-는 바람에", m:"Vì (sự cố)", e:"비 때문에 못 갔다."},
+{n:25, g:"-(으)ㄴ 채로", m:"Trong trạng thái", e:"옷 입은 채로 잤다."},
+{n:26, g:"-(으)ㄴ/는 덕분에", m:"Nhờ", e:"도와준 덕분에 끝냈다."},
+{n:27, g:"-도록", m:"Để / đến mức", e:"밤새도록 공부했다."},
+{n:28, g:"-기에 / -길래", m:"Vì thấy", e:"싸길래 많이 샀다."},
+{n:29, g:"-더라도", m:"Dù có", e:"무슨 일이 있어도 해야 한다."},
+{n:30, g:"-다가 보면", m:"Làm mãi rồi sẽ", e:"하다 보면 익숙해진다."}
+];
+
+// render menu
+const menu = document.getElementById("menu");
+data.forEach(d=>{
+    const a = document.createElement("a");
+    a.href = "#c"+d.n;
+    a.innerText = d.n + ". " + d.g;
+    menu.appendChild(a);
+});
+
+// render cards
+const cards = document.getElementById("cards");
+data.forEach(d=>{
+    const div = document.createElement("div");
+    div.className = "card";
+    div.id = "c"+d.n;
+
+    div.innerHTML = `
+        <div class="front"><span class="number">${d.n}.</span> ${d.g}</div>
+        <div class="back">
+            <p><b>👉 Nghĩa:</b> ${d.m}</p>
+            <p><b>📌 Ví dụ:</b> ${d.e}</p>
+        </div>
+    `;
+
+    div.onclick = ()=> div.classList.toggle("show");
+    cards.appendChild(div);
+});
+
+// search
+document.getElementById("search").addEventListener("input", function(){
+    let val = this.value.toLowerCase();
+    document.querySelectorAll(".card").forEach(card=>{
+        card.style.display = card.innerText.toLowerCase().includes(val) ? "block" : "none";
+    });
+});
+
+</script>
+
+</body>
+</html>
