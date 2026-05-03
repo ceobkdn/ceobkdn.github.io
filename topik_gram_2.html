@@ -1,0 +1,334 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>TOPIK Grammar Master - Pro Version</title>
+    <style>
+        :root {
+            --primary: #4a90e2;
+            --success: #2ecc71;
+            --danger: #e74c3c;
+            --bg: #f0f2f5;
+            --text: #2c3e50;
+        }
+
+        body {
+            font-family: 'Segoe UI', system-ui, -apple-system, sans-serif;
+            background-color: var(--bg);
+            color: var(--text);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            padding: 20px;
+            margin: 0;
+        }
+
+        .container { width: 100%; max-width: 550px; }
+
+        /* --- Table of Contents --- */
+        .index-section {
+            background: white;
+            border-radius: 15px;
+            margin-bottom: 20px;
+            overflow: hidden;
+            box-shadow: 0 4px 10px rgba(0,0,0,0.05);
+        }
+
+        .index-header {
+            background: var(--primary);
+            color: white;
+            padding: 12px 20px;
+            cursor: pointer;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            font-weight: bold;
+        }
+
+        .index-content {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(100px, 1fr));
+            gap: 8px;
+            padding: 15px;
+            max-height: 200px;
+            overflow-y: auto;
+            display: none; /* Ẩn mặc định */
+        }
+
+        .index-content.show { display: grid; }
+
+        .index-item {
+            font-size: 12px;
+            padding: 6px;
+            background: #f8fafc;
+            border: 1px solid #e2e8f0;
+            border-radius: 6px;
+            text-align: center;
+            cursor: pointer;
+            transition: all 0.2s;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+
+        .index-item:hover { background: var(--primary); color: white; }
+        .index-item.viewed { border-left: 3px solid var(--success); color: #666; }
+
+        /* --- Stats & Progress --- */
+        .stats-header {
+            display: flex;
+            justify-content: space-between;
+            background: white;
+            padding: 15px;
+            border-radius: 12px;
+            margin-bottom: 15px;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.05);
+        }
+
+        .progress-container {
+            width: 100%; height: 8px; background: #e0e0e0; border-radius: 10px; margin-bottom: 25px;
+        }
+
+        #progress-fill {
+            height: 100%; background: linear-gradient(90deg, var(--primary), #5dade2);
+            width: 0%; border-radius: 10px; transition: width 0.4s ease;
+        }
+
+        /* --- Flashcard --- */
+        .card-box { perspective: 1000px; height: 320px; margin-bottom: 30px; }
+        .card-inner {
+            position: relative; width: 100%; height: 100%;
+            transition: transform 0.6s cubic-bezier(0.4, 0, 0.2, 1);
+            transform-style: preserve-3d; cursor: pointer;
+        }
+        .card-inner.flipped { transform: rotateY(180deg); }
+        .card-front, .card-back {
+            position: absolute; width: 100%; height: 100%;
+            backface-visibility: hidden; border-radius: 20px;
+            display: flex; flex-direction: column; justify-content: center;
+            align-items: center; padding: 25px; box-sizing: border-box; background: white;
+            box-shadow: 0 10px 25px rgba(0,0,0,0.1);
+        }
+        .card-back { transform: rotateY(180deg); align-items: flex-start; text-align: left; background: #fdfdfd; overflow-y: auto;}
+        .card-front h2 { font-size: 2.8rem; color: var(--primary); margin: 0; }
+        .card-back h3 { color: var(--primary); margin-top: 0; border-bottom: 2px solid #f0f0f0; width: 100%; padding-bottom: 5px; }
+
+        /* --- Controls --- */
+        .btn-group { display: flex; gap: 15px; margin-top: 20px; }
+        button {
+            flex: 1; padding: 15px; border: none; border-radius: 12px;
+            font-weight: 600; cursor: pointer; transition: all 0.2s;
+        }
+        .btn-no { background: #fee2e2; color: #dc2626; }
+        .btn-yes { background: #dcfce7; color: #166534; }
+        .btn-no:hover { background: #fecaca; }
+        .btn-yes:hover { background: #bbf7d0; }
+
+        /* --- History --- */
+        .history-section {
+            margin-top: 40px; background: white; padding: 20px; border-radius: 15px;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.05);
+        }
+        table { width: 100%; border-collapse: collapse; margin-top: 15px; }
+        th, td { padding: 12px; text-align: left; border-bottom: 1px solid #eee; font-size: 14px; }
+        .tag { padding: 4px 8px; border-radius: 5px; font-size: 11px; font-weight: bold; }
+        .tag-perfect { background: #dcfce7; color: #166534; }
+
+        .result-screen { display: none; text-align: center; padding: 40px 20px; }
+    </style>
+</head>
+<body>
+
+<div class="container">
+    <div class="index-section">
+        <div class="index-header" onclick="toggleIndex()">
+            <span>Tra cứu nhanh (30 cấu trúc)</span>
+            <span id="index-icon">▼</span>
+        </div>
+        <div class="index-content" id="index-grid">
+            </div>
+    </div>
+
+    <div id="study-zone">
+        <div class="stats-header">
+            <div>Câu số: <strong id="current-num">1</strong>/30</div>
+            <div>Đã thuộc: <strong id="mastered-num" style="color:var(--success)">0</strong></div>
+        </div>
+
+        <div class="progress-container">
+            <div id="progress-fill"></div>
+        </div>
+
+        <div class="card-box" onclick="this.querySelector('.card-inner').classList.toggle('flipped')">
+            <div class="card-inner" id="card-inner">
+                <div class="card-front">
+                    <small style="color: #aaa; margin-bottom: 10px;">Ngữ pháp</small>
+                    <h2 id="txt-structure">-</h2>
+                    <p style="margin-top: 20px; color: #ccc; font-size: 0.8rem;">Chạm để lật thẻ</p>
+                </div>
+                <div class="card-back">
+                    <h3 id="txt-back-title">-</h3>
+                    <p><strong>Ý nghĩa:</strong> <span id="txt-meaning">-</span></p>
+                    <p><strong>Cách dùng:</strong> <code id="txt-usage">-</code></p>
+                    <div style="background: #f8fafc; padding: 12px; border-radius: 8px; width: 100%; margin-top: 10px; font-size: 0.95rem;">
+                        <strong>Ví dụ:</strong><br>
+                        <span id="txt-example">-</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="btn-group">
+            <button class="btn-no" onclick="handleAnswer(false)">Chưa thuộc ❌</button>
+            <button class="btn-yes" onclick="handleAnswer(true)">Đã thuộc ✅</button>
+        </div>
+    </div>
+
+    <div class="result-screen" id="result-zone">
+        <h1 style="font-size: 3rem;">🎉</h1>
+        <h2>Hoàn thành!</h2>
+        <p>Bạn đã thuộc <strong id="final-count">0</strong>/30 cấu trúc.</p>
+        <button onclick="location.reload()" style="background: var(--primary); color: white; width: 200px;">Học lại</button>
+    </div>
+
+    <div class="history-section">
+        <div style="display: flex; justify-content: space-between; align-items: center;">
+            <h3 style="margin: 0;">Lịch sử học tập</h3>
+            <button onclick="clearHistory()" style="background: none; color: #aaa; font-size: 11px; width: auto; padding: 0;">Xóa lịch sử</button>
+        </div>
+        <table id="history-table">
+            <thead>
+                <tr>
+                    <th>Thời gian</th>
+                    <th>Kết quả</th>
+                    <th>Đánh giá</th>
+                </tr>
+            </thead>
+            <tbody id="history-body"></tbody>
+        </table>
+    </div>
+</div>
+
+<script>
+const grammarData = [
+    {s: "-아/어 놓다", m: "chuẩn bị trước, làm xong và giữ nguyên trạng thái", u: "V + 아/어 놓다", e: "내일은 바쁠 것 같아서 오늘 미리 신청서를 써 놓았다."},
+    {s: "-기로 했다", m: "quyết định, kế hoạch", u: "V + 기로 했다", e: "나는 내일부터 담배를 끊기로 했다."},
+    {s: "-(으)면 되다", m: "chỉ cần là được", u: "V + (으)면 되다", e: "이쪽으로 3분쯤 걸어가면 된다."},
+    {s: "-게 하다", m: "khiến, sai khiến", u: "V + 게 하다", e: "선생님은 학생들에게 휴대 전화를 끄게 했다."},
+    {s: "-게 되다", m: "trở nên, bị (thay đổi trạng thái)", u: "V + 게 되다", e: "해외 지사에 가게 되었다."},
+
+    {s: "-(으)ㄴ 적이 있다", m: "đã từng (kinh nghiệm)", u: "V + (으)ㄴ 적이 있다", e: "부산에서 산 적이 있다."},
+    {s: "-아/어 있다", m: "trạng thái duy trì", u: "V + 아/어 있다", e: "사촌 동생이 마중을 나와 있었다."},
+    {s: "-아/어 가다", m: "đang dần / tiếp diễn", u: "V + 아/어 가다", e: "꽃이 자꾸 시들어 간다."},
+    {s: "-(으)ㄴ/는 셈이다", m: "coi như là", u: "A/V + 는 셈이다", e: "올해도 다 지난 셈이다."},
+    {s: "-아/어 오다", m: "đã và đang (từ trước đến nay)", u: "V + 아/어 오다", e: "3년 전부터 배워 왔다."},
+
+    {s: "-(으)ㄹ 뻔했다", m: "suýt nữa thì", u: "V + (으)ㄹ 뻔했다", e: "가방이 바뀔 뻔했다."},
+    {s: "-나 보다", m: "có lẽ (quan sát)", u: "A/V + 나 보다", e: "방에서 자나 보다."},
+    {s: "-기 마련이다", m: "đương nhiên, thường là", u: "V + 기 마련이다", e: "실력이 좋아지기 마련이다."},
+    {s: "-(으)ㄴ/는 모양이다", m: "có vẻ như", u: "A/V + 모양이다", e: "청소를 한 모양이다."},
+    {s: "-아/어 버렸다", m: "đã lỡ / hoàn toàn (tiếc nuối)", u: "V + 아/어 버렸다", e: "그냥 사 버렸다."},
+
+    {s: "-아/어 보이다", m: "trông có vẻ", u: "A + 아/어 보이다", e: "건강해 보인다."},
+    {s: "-(으)ㄴ/는 척하다", m: "giả vờ", u: "V + 척하다", e: "못 들은 척했다."},
+    {s: "-(으)ㄹ지도 모르다", m: "có thể (không chắc)", u: "V + ㄹ지도 모르다", e: "자리가 없을지도 모른다."},
+    {s: "-아/어 두다", m: "làm sẵn để dùng sau", u: "V + 아/어 두다", e: "표를 미리 사 두었다."},
+    {s: "-(으)ㄹ 리가 없다", m: "không có khả năng", u: "V + ㄹ 리가 없다", e: "도와줄 리가 없다."}
+];
+
+    let currentIndex = 0;
+    let masteredCount = 0;
+
+    function initIndex() {
+        const grid = document.getElementById('index-grid');
+        grid.innerHTML = grammarData.map((item, idx) => `
+            <div class="index-item" id="idx-${idx}" onclick="jumpTo(${idx})">${item.s}</div>
+        `).join('');
+    }
+
+    function toggleIndex() {
+        const content = document.getElementById('index-grid');
+        const icon = document.getElementById('index-icon');
+        const isShow = content.classList.toggle('show');
+        icon.innerText = isShow ? '▲' : '▼';
+    }
+
+    function jumpTo(index) {
+        currentIndex = index;
+        initCard();
+        if (window.innerWidth < 600) toggleIndex(); // Đóng trên mobile cho gọn
+    }
+
+    function initCard() {
+        if (currentIndex < grammarData.length) {
+            const data = grammarData[currentIndex];
+            document.getElementById('txt-structure').innerText = data.s;
+            document.getElementById('txt-back-title').innerText = data.s;
+            document.getElementById('txt-meaning').innerText = data.m;
+            document.getElementById('txt-usage').innerText = data.u;
+            document.getElementById('txt-example').innerText = data.e;
+            
+            document.getElementById('current-num').innerText = currentIndex + 1;
+            document.getElementById('mastered-num').innerText = masteredCount;
+            document.getElementById('progress-fill').style.width = (currentIndex / grammarData.length * 100) + "%";
+            
+            // Mark as viewed in index
+            document.querySelectorAll('.index-item').forEach(el => el.classList.remove('viewed'));
+            document.getElementById(`idx-${currentIndex}`).classList.add('viewed');
+
+            document.getElementById('card-inner').classList.remove('flipped');
+        } else {
+            finishSession();
+        }
+    }
+
+    function handleAnswer(isMastered) {
+        if (isMastered) masteredCount++;
+        currentIndex++;
+        initCard();
+    }
+
+    function finishSession() {
+        document.getElementById('study-zone').style.display = 'none';
+        document.getElementById('result-zone').style.display = 'block';
+        document.getElementById('final-count').innerText = masteredCount;
+        document.getElementById('progress-fill').style.width = "100%";
+        saveToHistory(masteredCount);
+    }
+
+    function saveToHistory(score) {
+        const history = JSON.parse(localStorage.getItem('topik_history') || '[]');
+        const session = {
+            date: new Date().toLocaleString('vi-VN', { hour: '2-digit', minute: '2-digit', day: '2-digit', month: '2-digit' }),
+            score: score,
+            total: grammarData.length
+        };
+        history.unshift(session);
+        localStorage.setItem('topik_history', JSON.stringify(history.slice(0, 10)));
+        renderHistory();
+    }
+
+    function renderHistory() {
+        const history = JSON.parse(localStorage.getItem('topik_history') || '[]');
+        document.getElementById('history-body').innerHTML = history.map(s => `
+            <tr>
+                <td>${s.date}</td>
+                <td><strong>${s.score}</strong>/${s.total}</td>
+                <td><span class="tag ${s.score >= 25 ? 'tag-perfect' : ''}">${s.score > 20 ? 'Tốt' : 'Cố gắng'}</span></td>
+            </tr>
+        `).join('');
+    }
+
+    function clearHistory() {
+        if(confirm("Xóa lịch sử?")) { localStorage.removeItem('topik_history'); renderHistory(); }
+    }
+
+    // Run
+    initIndex();
+    renderHistory();
+    initCard();
+</script>
+
+</body>
+</html>
